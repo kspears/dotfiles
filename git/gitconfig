@@ -1,3 +1,6 @@
 [user]
 	name = Kevin Spears
 	email = kevin@thespears.com
+	signingkey = A24297CD7A64526F
+[commit]
+	gpgsign = true
