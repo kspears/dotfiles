@@ -1,17 +1,23 @@
 #!/bin/bash
 # Kevin Spears
-# 2023-04-16
+# 2023-04-16 : initial
+# 2023-06-28 : making bash 3 compatiable
 
-# Array of dotfiles to install
-declare -A dotfiles
-dotfiles[.tmux.conf]=./tmux/tmux.conf
-dotfiles[.gitconfig]=./git/gitconfig
-dotfiles[.zshrc]=./zshrc/zshrc
 
-#loop through files to install configs
-for key in "${!dotfiles[@]}"; do
-	echo "Installing ${dotfiles[$key]}"
-	ln -rfs ${dotfiles[$key]} ~/$key
+config_files=(
+	'.tmux.conf|tmux/tmux.conf'
+	'.zshrc|zshrc/zshrc'
+	'.aws|aws/'
+	'.git|git/'
+	'.vimrc|vimrc/'
+)
+
+for item in "${config_files[@]}"
+do
+    dest=$(echo "${item}"|awk -F "|" '{print $1}')
+    source=$(echo "${item}"|awk -F "|" '{print $2}')
+	echo "Installing $source"
+	ln -fs $PWD/${source} ~/${dest}
 done
 
 #if needed install oh-my-zsh
