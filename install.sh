@@ -9,7 +9,7 @@ config_files=(
 	'.zshrc|zshrc/zshrc'
 	'.aws|aws/'
 	'.git|git/'
-	'.vimrc|vimrc/'
+	'.vimrc|vimrc/vimrc'
 )
 
 for item in "${config_files[@]}"

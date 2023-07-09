@@ -2,9 +2,12 @@
 # mac install and updater
 # 6/28/23
 
-if [ ! -f "/usr/local/bin/brew" ]; then 
+if [ ! -f "/opt/homebrew/bin/brew" ]; then 
     echo "install homebrew"
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    (echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> /Users/kevin/.zprofile
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+
 fi
 brew_base=(
     '1password'
