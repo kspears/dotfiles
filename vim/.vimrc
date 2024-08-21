@@ -79,6 +79,9 @@ endif
 " Always show current position
 set ruler
 
+" Show line numbers
+set number
+
 " Height of the command bar
 set cmdheight=1
 
@@ -143,11 +146,11 @@ if $COLORTERM == 'gnome-terminal'
 endif
 
 try
-    colorscheme desert
+    colorscheme slate
 catch
 endtry
 
-set background=dark
+"set background=dark
 
 " Set extra options when running in GUI mode
 if has("gui_running")
