@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-
+#
 fpath=($DOTFILES/zsh/plugins $fpath)
 
 
@@ -36,6 +36,7 @@ setopt HIST_VERIFY               # Do not execute immediately upon history expan
 autoload -Uz compinit; compinit
 autoload bashcompinit && bashcompinit
 _comp_options+=(globdots) # With hidden files
+export CLICOLOR=1
 
 source $DOTFILES/zsh/completion.zsh
 eval "$(starship init zsh)"
