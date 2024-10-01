@@ -41,3 +41,4 @@ export CLICOLOR=1
 source $DOTFILES/zsh/completion.zsh
 eval "$(starship init zsh)"
 source $DOTFILES/zsh/aliases.zsh
+export PATH="/Users/<username>/.deno/bin:$PATH"

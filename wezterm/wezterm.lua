@@ -6,13 +6,16 @@ local config = wezterm.config_builder()
 config.set_environment_variables = {
 	PATH = "/opt/homebrew/bin:" .. os.getenv("PATH"),
 }
-local appearance = require("appearance")
+-- local appearance = require("appearance")
 
 -- Use it!
 -- if appearance.is_dark() then
-config.color_scheme = "Tokyo Night"
+-- config.color_scheme = "Tokyo Night"
+config.color_scheme = "Raycast_Dark"
+config.font = wezterm.font("Hack Nerd Font Mono")
+config.font_size = 14.0
 -- else
--- 	config.color_scheme = "Tokyo Night Day"
+-- 	config.color_scheme = "Raycast_Light"
 -- end
 
 -- Slightly transparent and blurred background
@@ -28,8 +31,8 @@ config.window_decorations = "INTEGRATED_BUTTONS"
 config.window_frame = {
 	-- Berkeley Mono for me again, though an idea could be to try a
 	-- serif font here instead of monospace for a nicer look?
-	font = wezterm.font({ family = "Berkeley Mono", weight = "Bold" }),
-	font_size = 11,
+	font = wezterm.font({ family = "Amazon Ember" }),
+	font_size = 14,
 }
 
 wezterm.on("update-status", function(window)
