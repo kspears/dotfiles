@@ -13,7 +13,6 @@ ln -fs $PWD/zsh/completion.zsh ~/completion.zsh
 ln -fs $PWD/zsh/prompt ~/prompt
 
 # nvim
-ln -fs $PWD/nvim/nvim ~/.confg/nvim
-
+ln -fs $PWD/nvim/.config/nvim ~/.config/nvim
 # tmux
 ln -fs $PWD/tmux/.tmux.conf ~/.tmux.conf
