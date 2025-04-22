@@ -12,6 +12,8 @@ ln -fs $PWD/zsh/aliases.zsh ~/aliases.zsh
 ln -fs $PWD/zsh/completion.zsh ~/completion.zsh
 ln -fs $PWD/zsh/prompt ~/prompt
 
+ln -fs $PWD/starship.toml ~/.config/starship.toml
+
 # nvim
 ln -fs $PWD/nvim/.config/nvim ~/.config/nvim
 # tmux
