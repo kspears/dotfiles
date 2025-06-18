@@ -1,0 +1,12 @@
+alias rdp_abdev_db='aws ec2-instance-connect open-tunnel --remote-port 3389  --local-port 13389 --instance-id i-04c84998bc79e99e9'
+alias rdp_abprod_db='aws ec2-instance-connect open-tunnel --remote-port 3389  --local-port 13389 --instance-id i-0612f827853c7e378'
+alias rdp_abprod_web='aws ec2-instance-connect open-tunnel --remote-port 3389  --local-port 13389 --instance-id i-0d59fd6a872f665b5'
+alias rdp_abdev_web='aws ec2-instance-connect open-tunnel --remote-port 3389  --local-port 13389 --instance-id i-0408ad5e10c295aed'
+alias rdp_vm2201p-dc='aws ec2-instance-connect open-tunnel --remote-port 3389  --local-port 13389 --instance-id i-0be3272590f01484c'
+alias rdp_vm1913p-dc='aws ec2-instance-connect open-tunnel --remote-port 3389  --local-port 13389 --instance-id i-00bd0a3e7b0c53a71'
+alias rdp_vm1232p-files='aws ec2-instance-connect open-tunnel --remote-port 3389  --local-port 13389 --instance-id i-42ecaeba' 
+alias rdp_va2210p-bryteflow='assume pfmain && aws ec2-instance-connect open-tunnel --remote-port 3389  --local-port 13389 --instance-id i-07524d666ccddda2a'
+alias rdp_va2205p-powerbi-jisellaw='assume pfmain && aws ec2-instance-connect open-tunnel --remote-port 3389  --local-port 13389 --instance-id i-06ff0f88f28a74943'
+
+alias granted-sso-populate='granted sso populate --prune --sso-region us-east-2 --no-credential-process https://prisonfellowship.awsapps.com/start'
+alias granted-sso-login='granted sso login --sso-region us-east-2 --sso-start-url https://prisonfellowship.awsapps.com/start'

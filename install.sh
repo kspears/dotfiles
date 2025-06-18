@@ -9,6 +9,8 @@
 ln -fs $PWD/zsh/.zshrc ~/.zshrc
 ln -fs $PWD/zsh/.zshenv ~/.zshenv
 ln -fs $PWD/zsh/aliases.zsh ~/aliases.zsh
+ln -fs $PWD/zsh/aliases.zsh ~/aliases_pf.zsh
+ln -fs $PWD/zsh/secrets.zsh ~/secrets.zsh
 ln -fs $PWD/zsh/completion.zsh ~/completion.zsh
 ln -fs $PWD/zsh/prompt ~/prompt
 

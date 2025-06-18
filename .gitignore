@@ -4,3 +4,4 @@
 .LSOverride
 .idea
 aws
+secrets.zsh
