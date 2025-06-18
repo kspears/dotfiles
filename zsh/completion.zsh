@@ -8,4 +8,4 @@ zstyle ':completion:*:*:*:*:descriptions' format '%F{green}-- %d --%f'
 zstyle ':completion:*:*:*:*:corrections' format '%F{yellow}!- %d (errors: %e) -!%f'
 
 
-complete -C '/opt/homebrew/bin/aws_completer' aws
+#complete -C '/opt/homebrew/bin/aws_completer' aws
