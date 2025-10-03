@@ -4,7 +4,8 @@
 # 2023-06-28 : making bash 3 compatiable
 # 2024-08-21 : Removing oh-my-zsh, simplified install
 #
-
+mkdir -p ~/.config
+touch $PWD/zsh/secrets.zsh
 # zsh config files
 ln -fs $PWD/zsh/.zshrc ~/.zshrc
 ln -fs $PWD/zsh/.zshenv ~/.zshenv
@@ -17,6 +18,8 @@ ln -fs $PWD/zsh/prompt ~/prompt
 ln -fs $PWD/starship.toml ~/.config/starship.toml
 
 # nvim
-ln -fs $PWD/nvim/.config/nvim ~/.config/nvim
+ln -fs $PWD/nvim/ ~/.config/nvim
 # tmux
 ln -fs $PWD/tmux/.tmux.conf ~/.tmux.conf
+# wezterm
+ln -fs $PWD/wezterm/ ~/.config/wezterm

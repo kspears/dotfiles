@@ -12,21 +12,23 @@ fi
 brew_base=(
     '1password'
     'iterm2'
-    'visual-studio-code'
+    'cursor'
     '1password-cli'
-    'brave-browser'
     'firefox'
-    'logi-options-plus'
     'signal'
-    'htop'
 )
 
 brew_cloud_dev=(
     'awscli'
     'ansible'
-    'nomad'
-    'terraform'
-    'node'
+    'opentofu'
+    'font-hack-nerd-font'
+    'font-dejavu-sans-mono-nerd-font'
+    'htop'
+    'container'
+    'nvim'
+    'starship'
+    'pyenv'
 )
 
 brew_media_convert=(
