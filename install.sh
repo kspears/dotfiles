@@ -17,6 +17,8 @@ ln -fs $PWD/zsh/prompt ~/prompt
 
 ln -fs $PWD/starship.toml ~/.config/starship.toml
 
+# vim
+ln -fs $PWD/vim/vimrc ~/.vimrc
 # nvim
 ln -fs $PWD/nvim/ ~/.config/nvim
 # tmux

@@ -1,0 +1,119 @@
+" =============================================================================
+" General
+" =============================================================================
+set nocompatible
+set encoding=utf-8
+set hidden                  " allow unsaved buffers in background
+set history=1000
+set autoread                " reload files changed outside vim
+set mouse=a                 " enable mouse in all modes
+set backspace=indent,eol,start
+
+" No swap/backup clutter
+set noswapfile
+set nobackup
+set nowritebackup
+
+" System clipboard
+set clipboard=unnamed
+
+" =============================================================================
+" UI
+" =============================================================================
+set number
+set relativenumber
+set cursorline
+set signcolumn=yes
+set scrolloff=8
+set sidescrolloff=8
+set colorcolumn=120
+set ruler
+set showcmd
+set showmode
+set laststatus=2
+set splitright
+set splitbelow
+set nowrap
+
+" Status line
+set statusline=%f\ %m%r%h%w\ [%Y]\ %=%l/%L\ col\ %c\ (%p%%)
+
+" =============================================================================
+" Colors
+" =============================================================================
+syntax on
+filetype plugin indent on
+set background=dark
+colorscheme habamax
+
+" Highlight trailing whitespace
+highlight TrailingWhitespace ctermbg=red guibg=red
+match TrailingWhitespace /\s\+$/
+
+" =============================================================================
+" Indentation
+" =============================================================================
+set expandtab
+set tabstop=2
+set shiftwidth=2
+set softtabstop=2
+set autoindent
+set smartindent
+
+" Filetype overrides
+autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4
+autocmd FileType go     setlocal noexpandtab tabstop=4 shiftwidth=4
+
+" =============================================================================
+" Search
+" =============================================================================
+set incsearch
+set hlsearch
+set ignorecase
+set smartcase
+
+" Clear search highlight with <Esc>
+nnoremap <Esc> :nohlsearch<CR><Esc>
+
+" =============================================================================
+" Keymaps
+" =============================================================================
+let mapleader = " "
+
+" Faster saves
+nnoremap <leader>w :w<CR>
+
+" Split navigation
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" Stay in visual mode when indenting
+vnoremap < <gv
+vnoremap > >gv
+
+" Move selected lines up/down
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap K :m '<-2<CR>gv=gv
+
+" Keep cursor centered when jumping
+nnoremap n nzz
+nnoremap N Nzz
+nnoremap <C-d> <C-d>zz
+nnoremap <C-u> <C-u>zz
+
+" =============================================================================
+" Completion
+" =============================================================================
+set wildmenu
+set wildmode=longest:full,full
+set wildignore=*.o,*.obj,*.pyc,*.DS_Store,*.git
+
+" =============================================================================
+" Misc
+" =============================================================================
+set updatetime=300
+set timeoutlen=500
+set noerrorbells
+set belloff=all
