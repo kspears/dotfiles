@@ -11,3 +11,4 @@ alias notes="nvim ~/notes/."
 
 fpath=($HOME/.granted/zsh_autocomplete/assume/ $fpath)
 fpath=($HOME/.granted/zsh_autocomplete/granted/ $fpath)
+. "$HOME/.cargo/env"
