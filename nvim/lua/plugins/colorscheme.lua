@@ -1,14 +1,9 @@
 return {
-  {
-    "Shatur/neovim-ayu",
-    opts = {
-      mirage = true,
-    },
-  },
+  { "Shatur/neovim-ayu" },
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "ayu-mirage",
+      colorscheme = "ayu-dark",
     },
   },
 }
