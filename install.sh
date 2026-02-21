@@ -22,3 +22,4 @@ ln -fs $PWD/tmux/.tmux.conf ~/.tmux.conf
 # claude
 mkdir -p ~/.claude
 ln -fs $PWD/claude/settings.json ~/.claude/settings.json
+ln -fs $PWD/claude/statusline.sh ~/.claude/statusline.sh
