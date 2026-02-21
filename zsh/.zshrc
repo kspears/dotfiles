@@ -39,7 +39,7 @@ _comp_options+=(globdots) # With hidden files
 export CLICOLOR=1
 bindkey '^[[Z' reverse-menu-complete
 source $DOTFILES/zsh/completion.zsh
-eval "$(starship init zsh)"
+source $DOTFILES/zsh/prompt.zsh
 source $DOTFILES/zsh/aliases.zsh
 source $DOTFILES/zsh/aliases_pf.zsh
 source $DOTFILES/zsh/secrets.zsh
