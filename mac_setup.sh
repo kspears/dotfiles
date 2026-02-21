@@ -5,7 +5,7 @@
 if [ ! -f "/opt/homebrew/bin/brew" ]; then 
     echo "install homebrew"
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    (echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> /Users/kevin/.zprofile
+    (echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> "$HOME/.zprofile"
     eval "$(/opt/homebrew/bin/brew shellenv)"
 
 fi
@@ -27,7 +27,7 @@ brew_cloud_dev=(
     'htop'
     'container'
     'nvim'
-    'starship'
+    'tmux'
     'pyenv'
 )
 
@@ -55,3 +55,6 @@ do
 done
 
 brew install ${brew_string}
+
+# symlink dotfiles
+$(dirname "$0")/install.sh

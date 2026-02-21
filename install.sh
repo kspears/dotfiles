@@ -15,13 +15,10 @@ ln -fs $PWD/zsh/secrets.zsh ~/secrets.zsh
 ln -fs $PWD/zsh/completion.zsh ~/completion.zsh
 ln -fs $PWD/zsh/prompt ~/prompt
 
-ln -fs $PWD/starship.toml ~/.config/starship.toml
-
-# vim
-ln -fs $PWD/vim/vimrc ~/.vimrc
 # nvim
 ln -fs $PWD/nvim/ ~/.config/nvim
 # tmux
 ln -fs $PWD/tmux/.tmux.conf ~/.tmux.conf
-# wezterm
-ln -fs $PWD/wezterm/ ~/.config/wezterm
+# claude
+mkdir -p ~/.claude
+ln -fs $PWD/claude/settings.json ~/.claude/settings.json
