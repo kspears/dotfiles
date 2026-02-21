@@ -19,6 +19,9 @@ ln -fs $PWD/zsh/prompt ~/prompt
 ln -fs $PWD/nvim/ ~/.config/nvim
 # tmux
 ln -fs $PWD/tmux/.tmux.conf ~/.tmux.conf
+# kitty
+mkdir -p ~/.config/kitty
+ln -fs $PWD/kitty/kitty.conf ~/.config/kitty/kitty.conf
 # claude
 mkdir -p ~/.claude
 ln -fs $PWD/claude/settings.json ~/.claude/settings.json
