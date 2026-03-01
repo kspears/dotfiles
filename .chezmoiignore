@@ -1,0 +1,5 @@
+# macOS-only files
+{{ if ne .chezmoi.os "darwin" }}
+dot_Brewfile.tmpl
+.chezmoiscripts/darwin_*
+{{ end }}
