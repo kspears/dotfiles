@@ -1,0 +1,9 @@
+{{- $choices := list "home" "work" "consulting" -}}
+{{- $machine := promptChoiceOnce . "machine" "Which machine type" $choices "home" -}}
+{{- $username := .chezmoi.username -}}
+
+sourceDir = {{ .chezmoi.sourceDir | quote }}
+
+[data]
+  machine = {{ $machine | quote }}
+  username = {{ $username | quote }}
