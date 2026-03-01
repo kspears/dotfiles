@@ -8,8 +8,6 @@ cask "iterm2"
 
 # Home only
 {{ if eq .machine "home" -}}
-cask "1password"
-brew "1password-cli"
 cask "cursor"
 cask "signal"
 brew "ansible"
@@ -17,8 +15,6 @@ brew "htop"
 {{ end -}}
 
 # Consulting only
-{{ if eq .machine "consulting" -}}
-cask "firefox"
-{{ end -}}
+
 
 # Work only — TBD after checking work machine
