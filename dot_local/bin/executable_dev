@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# dev — start or attach to a tmux dev session
+# Usage: dev [directory] [session-name]
+#
+# Layout:
+#   +------------------+----------+
+#   |                  |          |
+#   |     Neovim       |  Claude  |
+#   +------------------+          |
+#   |    Terminal      |          |
+#   +------------------+----------+
+
+DIR="${1:-$(pwd)}"
+SESSION="${2:-$(basename "$DIR")}"
+
+if tmux has-session -t "$SESSION" 2>/dev/null; then
+  tmux attach -t "$SESSION"
+  exit
+fi
+
+tmux new-session -d -s "$SESSION" -c "$DIR"
+
+# Right column: claude (full height, 35% width)
+tmux split-window -h -p 35 -t "$SESSION:1.1" -c "$DIR"
+tmux send-keys -t "$SESSION:1.2" "claude" Enter
+
+# Left column: split for terminal at bottom (25% of left height)
+tmux select-pane -t "$SESSION:1.1"
+tmux split-window -v -p 20 -t "$SESSION:1.1" -c "$DIR"
+
+# Top-left: neovim
+tmux send-keys -t "$SESSION:1.1" "nvim ." Enter
+
+# Focus neovim
+tmux select-pane -t "$SESSION:1.1"
+
+tmux attach -t "$SESSION"
