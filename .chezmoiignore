@@ -1,3 +1,5 @@
+.aws
+
 # macOS-only files
 {{ if ne .chezmoi.os "darwin" }}
 dot_Brewfile.tmpl

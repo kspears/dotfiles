@@ -1,7 +1,9 @@
 #!/usr/bin/env zsh
-#
-fpath=({{ .chezmoi.homeDir }}/zsh_plugins $fpath)
 
+fpath=({{ .chezmoi.homeDir }}/zsh_plugins $fpath)
+{{ if eq .machine "work" -}}
+fpath=($HOME/.docker/completions $fpath)
+{{ end -}}
 
 # +------------+
 # | NAVIGATION |
@@ -33,19 +35,40 @@ setopt HIST_IGNORE_SPACE         # Do not record an event starting with a space.
 setopt HIST_SAVE_NO_DUPS         # Do not write a duplicate event to the history file.
 setopt HIST_VERIFY               # Do not execute immediately upon history expansion.
 
+# +------------+
+# | COMPLETION |
+# +------------+
+
 autoload -Uz compinit; compinit
 autoload bashcompinit && bashcompinit
 _comp_options+=(globdots) # With hidden files
 export CLICOLOR=1
 bindkey '^[[Z' reverse-menu-complete
 source ~/completion.zsh
+
+# +---------+
+# | SOURCES |
+# +---------+
+
 source ~/prompt.zsh
 source ~/aliases.zsh
+source ~/aws.zsh
 source ~/secrets.zsh
-export PATH="/Users/{{ .username }}/.deno/bin:$PATH"
+
+# +------+
+# | PATH |
+# +------+
+
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init - zsh)"
+eval "$(pyenv virtualenv-init -)"
+{{ if eq .machine "work" -}}
+export PATH="${HOMEBREW_PREFIX}/opt/openssl/bin:$PATH"
+{{ end -}}
+{{ if eq .machine "home" -}}
+export PATH="{{ .chezmoi.homeDir }}/.deno/bin:$PATH"
 export PATH="/usr/local/opt/tcl-tk/bin:$PATH"
+{{ end -}}
 export PATH="/opt/homebrew/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
