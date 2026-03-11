@@ -12,17 +12,21 @@
 
 DIR="${1:-$(pwd)}"
 SESSION="${2:-$(basename "$DIR")}"
+TITLE="Dev [$SESSION]"
 
 if tmux has-session -t "$SESSION" 2>/dev/null; then
+  tmux rename-window -t "$SESSION:1" "$TITLE"
+  echo -ne '\033]0;'"$TITLE"'\007'
   tmux attach -t "$SESSION"
   exit
 fi
 
 tmux new-session -d -s "$SESSION" -c "$DIR"
+tmux rename-window -t "$SESSION:1" "$TITLE"
 
 # Right column: claude (full height, 35% width)
 tmux split-window -h -p 35 -t "$SESSION:1.1" -c "$DIR"
-tmux send-keys -t "$SESSION:1.2" "claude" Enter
+tmux send-keys -t "$SESSION:1.2" "{{ if eq .machine "work" }}cursor-agent{{ else }}claude{{ end }}" Enter
 
 # Left column: split for terminal at bottom (25% of left height)
 tmux select-pane -t "$SESSION:1.1"
@@ -34,4 +38,5 @@ tmux send-keys -t "$SESSION:1.1" "nvim ." Enter
 # Focus neovim
 tmux select-pane -t "$SESSION:1.1"
 
+echo -ne '\033]0;'"$TITLE"'\007'
 tmux attach -t "$SESSION"

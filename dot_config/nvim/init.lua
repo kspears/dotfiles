@@ -535,5 +535,13 @@ vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
   callback = function(args) update_git_signs_debounced(args.buf) end,
 })
 
+-- ── RPC server for external tools (lola, cursor, etc.) ───────────────
+local tmux_session = vim.fn.getenv("TMUX") ~= vim.NIL
+  and vim.trim(vim.fn.system("tmux display-message -p '#S'"))
+  or nil
+if tmux_session and tmux_session ~= "" then
+  vim.fn.serverstart("/tmp/nvim-" .. tmux_session .. ".sock")
+end
+
 -- ── Colorscheme ──────────────────────────────────────────────────────
 vim.cmd.colorscheme("ayu-dark")
