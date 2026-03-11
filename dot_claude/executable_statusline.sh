@@ -10,9 +10,9 @@ CWD_DISPLAY=$(echo "$CWD" | sed "s|^$HOME_ESC|~|")
 
 # Git info (skip locks to avoid contention)
 GIT_INFO=""
-if branch=$(git -C "$CWD" symbolic-ref --short HEAD 2>/dev/null); then
+if branch=$(cd "$CWD" 2>/dev/null && git symbolic-ref --short HEAD 2>/dev/null); then
   dirty=""
-  [[ -n $(git -C "$CWD" status --porcelain 2>/dev/null) ]] && dirty="*"
+  [[ -n $(cd "$CWD" 2>/dev/null && git status --porcelain 2>/dev/null) ]] && dirty="*"
   GIT_INFO=" ($branch$dirty)"
 fi
 
