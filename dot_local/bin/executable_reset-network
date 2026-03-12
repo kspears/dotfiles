@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# reset-network — reset Wi‑Fi + wired, flush DNS. Workaround for VPN flakiness.
+# macOS only.
+
+set -e
+
+if [[ "$(uname)" != Darwin ]]; then
+  echo "reset-network: macOS only." >&2
+  exit 0
+fi
+
+echo "Flushing DNS..."
+sudo dscacheutil -flushcache
+sudo killall -HUP mDNSResponder 2>/dev/null || true
+
+echo "Turning off network services..."
+for service in "Wi-Fi" "Thunderbolt Ethernet" "USB 10/100/1000 LAN" "Ethernet" "Display Ethernet"; do
+  if networksetup -getnetworkserviceenabled "$service" 2>/dev/null | grep -q Enabled; then
+    sudo networksetup -setnetworkserviceenabled "$service" off
+  fi
+done
+
+echo "Waiting 3 seconds..."
+sleep 3
+
+echo "Turning on network services..."
+for service in "Wi-Fi" "Thunderbolt Ethernet" "USB 10/100/1000 LAN" "Ethernet" "Display Ethernet"; do
+  if networksetup -listnetworkserviceorder 2>/dev/null | grep -q "$service"; then
+    sudo networksetup -setnetworkserviceenabled "$service" on
+  fi
+done
+
+echo "Done."
