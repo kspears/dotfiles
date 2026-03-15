@@ -10,5 +10,4 @@ if [ -z "$KITTY_LISTEN_ON" ]; then
   exit 1
 fi
 
-kitty @ launch --type=tab --tab-title "$TITLE" --cwd "$DIR" > /dev/null
 kitty @ launch --type=tab --tab-title "$TITLE: claude" --cwd "$DIR" {{ if eq .machine "work" }}cursor-agent{{ else }}claude{{ end }} > /dev/null
