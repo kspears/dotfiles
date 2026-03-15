@@ -538,7 +538,7 @@ vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
 -- ── RPC server for external tools (lola, cursor, etc.) ───────────────
 local kitty_pid = vim.fn.getenv("KITTY_PID")
 if kitty_pid ~= vim.NIL and kitty_pid ~= "" then
-  vim.fn.serverstart("/tmp/nvim-kitty-" .. kitty_pid .. ".sock")
+  pcall(vim.fn.serverstart, "/tmp/nvim-kitty-" .. kitty_pid .. ".sock")
 end
 
 -- ── Colorscheme ──────────────────────────────────────────────────────
