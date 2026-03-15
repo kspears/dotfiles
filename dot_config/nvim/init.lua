@@ -51,23 +51,13 @@ vim.g.netrw_banner = 0
 vim.g.netrw_liststyle = 3
 vim.g.netrw_winsize = 25
 
--- ── Kitty-aware navigation ───────────────────────────────────────────
-local function kitty_navigate(direction)
-  local win = vim.api.nvim_get_current_win()
-  vim.cmd("wincmd " .. direction)
-  if vim.api.nvim_get_current_win() == win then
-    local kitty_dir = ({ h = "left", j = "bottom", k = "top", l = "right" })[direction]
-    vim.fn.system({ "kitty", "@", "focus-window", "--match", "neighbor:" .. kitty_dir })
-  end
-end
-
 local map = vim.keymap.set
 
--- Window/kitty navigation
-map("n", "<C-h>", function() kitty_navigate("h") end, { desc = "Navigate left" })
-map("n", "<C-j>", function() kitty_navigate("j") end, { desc = "Navigate down" })
-map("n", "<C-k>", function() kitty_navigate("k") end, { desc = "Navigate up" })
-map("n", "<C-l>", function() kitty_navigate("l") end, { desc = "Navigate right" })
+-- Window navigation
+map("n", "<C-h>", "<C-w>h", { desc = "Navigate left" })
+map("n", "<C-j>", "<C-w>j", { desc = "Navigate down" })
+map("n", "<C-k>", "<C-w>k", { desc = "Navigate up" })
+map("n", "<C-l>", "<C-w>l", { desc = "Navigate right" })
 
 -- ── Keymaps ──────────────────────────────────────────────────────────
 

@@ -1,30 +1,14 @@
 #!/usr/bin/env bash
-# dev — open a kitty dev layout in a new tab
-# Usage: dev [directory] [session-name]
-#
-# Layout:
-#   +------------------+----------+
-#   |                  |          |
-#   |     Neovim       |  Claude  |
-#   +------------------+          |
-#   |    Terminal      |          |
-#   +------------------+----------+
+# dev — open a dev workspace in kitty (terminal tab + claude tab)
+# Usage: dev [directory]
 
 DIR="${1:-$(pwd)}"
-SESSION="${2:-$(basename "$DIR")}"
-TITLE="Dev [$SESSION]"
+TITLE="$(basename "$DIR")"
 
 if [ -z "$KITTY_LISTEN_ON" ]; then
   echo "Error: not running inside kitty (or remote control is not enabled)"
-  echo "Launch kitty first, then run dev from inside it."
   exit 1
 fi
 
-# Create new tab with neovim
-kitty @ launch --type=tab --tab-title "$TITLE" --cwd "$DIR" --title neovim nvim .
-
-# Right column: claude (full height)
-kitty @ launch --location=vsplit --dont-take-focus --cwd "$DIR" --title claude {{ if eq .machine "work" }}cursor-agent{{ else }}claude{{ end }}
-
-# Bottom-left: terminal
-kitty @ launch --location=hsplit --dont-take-focus --cwd "$DIR" --title terminal
+kitty @ launch --type=tab --tab-title "$TITLE" --cwd "$DIR"
+kitty @ launch --type=tab --tab-title "$TITLE: claude" --cwd "$DIR" {{ if eq .machine "work" }}cursor-agent{{ else }}claude{{ end }}
