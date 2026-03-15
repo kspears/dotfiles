@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# dev — start or attach to a tmux dev session
+# dev — open a kitty dev layout in a new tab
 # Usage: dev [directory] [session-name]
 #
 # Layout:
@@ -14,29 +14,17 @@ DIR="${1:-$(pwd)}"
 SESSION="${2:-$(basename "$DIR")}"
 TITLE="Dev [$SESSION]"
 
-if tmux has-session -t "$SESSION" 2>/dev/null; then
-  tmux rename-window -t "$SESSION:1" "$TITLE"
-  echo -ne '\033]0;'"$TITLE"'\007'
-  tmux attach -t "$SESSION"
-  exit
+if [ -z "$KITTY_LISTEN_ON" ]; then
+  echo "Error: not running inside kitty (or remote control is not enabled)"
+  echo "Launch kitty first, then run dev from inside it."
+  exit 1
 fi
 
-tmux new-session -d -s "$SESSION" -c "$DIR"
-tmux rename-window -t "$SESSION:1" "$TITLE"
+# Create new tab with neovim
+kitty @ launch --type=tab --tab-title "$TITLE" --cwd "$DIR" --title neovim nvim .
 
-# Right column: claude (full height, 35% width)
-tmux split-window -h -p 35 -t "$SESSION:1.1" -c "$DIR"
-tmux send-keys -t "$SESSION:1.2" "{{ if eq .machine "work" }}cursor-agent{{ else }}claude{{ end }}" Enter
+# Right column: claude (full height)
+kitty @ launch --location=vsplit --dont-take-focus --cwd "$DIR" --title claude {{ if eq .machine "work" }}cursor-agent{{ else }}claude{{ end }}
 
-# Left column: split for terminal at bottom (25% of left height)
-tmux select-pane -t "$SESSION:1.1"
-tmux split-window -v -p 20 -t "$SESSION:1.1" -c "$DIR"
-
-# Top-left: neovim
-tmux send-keys -t "$SESSION:1.1" "nvim ." Enter
-
-# Focus neovim
-tmux select-pane -t "$SESSION:1.1"
-
-echo -ne '\033]0;'"$TITLE"'\007'
-tmux attach -t "$SESSION"
+# Bottom-left: terminal
+kitty @ launch --location=hsplit --dont-take-focus --cwd "$DIR" --title terminal

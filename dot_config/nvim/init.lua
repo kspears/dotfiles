@@ -51,23 +51,23 @@ vim.g.netrw_banner = 0
 vim.g.netrw_liststyle = 3
 vim.g.netrw_winsize = 25
 
--- ── Tmux-aware navigation ────────────────────────────────────────────
-local function tmux_navigate(direction)
+-- ── Kitty-aware navigation ───────────────────────────────────────────
+local function kitty_navigate(direction)
   local win = vim.api.nvim_get_current_win()
   vim.cmd("wincmd " .. direction)
   if vim.api.nvim_get_current_win() == win then
-    local tmux_dir = ({ h = "L", j = "D", k = "U", l = "R" })[direction]
-    vim.fn.system({ "tmux", "select-pane", "-" .. tmux_dir })
+    local kitty_dir = ({ h = "left", j = "bottom", k = "top", l = "right" })[direction]
+    vim.fn.system({ "kitty", "@", "focus-window", "--match", "neighbor:" .. kitty_dir })
   end
 end
 
 local map = vim.keymap.set
 
--- Window/tmux navigation
-map("n", "<C-h>", function() tmux_navigate("h") end, { desc = "Navigate left" })
-map("n", "<C-j>", function() tmux_navigate("j") end, { desc = "Navigate down" })
-map("n", "<C-k>", function() tmux_navigate("k") end, { desc = "Navigate up" })
-map("n", "<C-l>", function() tmux_navigate("l") end, { desc = "Navigate right" })
+-- Window/kitty navigation
+map("n", "<C-h>", function() kitty_navigate("h") end, { desc = "Navigate left" })
+map("n", "<C-j>", function() kitty_navigate("j") end, { desc = "Navigate down" })
+map("n", "<C-k>", function() kitty_navigate("k") end, { desc = "Navigate up" })
+map("n", "<C-l>", function() kitty_navigate("l") end, { desc = "Navigate right" })
 
 -- ── Keymaps ──────────────────────────────────────────────────────────
 
@@ -536,11 +536,9 @@ vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
 })
 
 -- ── RPC server for external tools (lola, cursor, etc.) ───────────────
-local tmux_session = vim.fn.getenv("TMUX") ~= vim.NIL
-  and vim.trim(vim.fn.system("tmux display-message -p '#S'"))
-  or nil
-if tmux_session and tmux_session ~= "" then
-  vim.fn.serverstart("/tmp/nvim-" .. tmux_session .. ".sock")
+local kitty_pid = vim.fn.getenv("KITTY_PID")
+if kitty_pid ~= vim.NIL and kitty_pid ~= "" then
+  vim.fn.serverstart("/tmp/nvim-kitty-" .. kitty_pid .. ".sock")
 end
 
 -- ── Colorscheme ──────────────────────────────────────────────────────
