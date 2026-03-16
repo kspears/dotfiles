@@ -49,6 +49,7 @@ _precmd() {
     _cmd_duration=""
   fi
   _cmd_start=0
+  [[ -n "$KITTY_LISTEN_ON" ]] && kitty @ set-tab-title "$(basename $PWD)" 2>/dev/null
 }
 
 add-zsh-hook preexec _preexec
