@@ -38,8 +38,13 @@ _cmd_start=0
 _cmd_duration=""
 _prev_pwd=""
 
+_kitty_title() {
+  [[ -n "$KITTY_LISTEN_ON" ]] && kitty @ set-tab-title "$1 [$(basename $PWD)]" 2>/dev/null
+}
+
 _preexec() {
   _cmd_start=$SECONDS
+  _kitty_title "${1%% *}"
 }
 
 _precmd() {
@@ -50,8 +55,8 @@ _precmd() {
     _cmd_duration=""
   fi
   _cmd_start=0
-  if [[ -n "$KITTY_LISTEN_ON" && "$PWD" != "$_prev_pwd" ]]; then
-    kitty @ set-tab-title "$(basename $PWD)" 2>/dev/null
+  if [[ "$PWD" != "$_prev_pwd" || -z "$_prev_pwd" ]]; then
+    _kitty_title zsh
     _prev_pwd="$PWD"
   fi
 }
