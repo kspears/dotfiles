@@ -58,8 +58,8 @@ local function kitty_navigate(direction)
   local win = vim.api.nvim_get_current_win()
   vim.cmd("wincmd " .. direction)
   if vim.api.nvim_get_current_win() == win then
-    local kitty_dir = ({ h = "left", j = "bottom", k = "top", l = "right" })[direction]
-    vim.fn.system({ "kitty", "@", "focus-window", "--match", "neighbor:" .. kitty_dir })
+    vim.fn.system({ "kitty", "@", "focus-window", "--match",
+      "neighbor:" .. ({ h = "left", j = "bottom", k = "top", l = "right" })[direction] })
   end
 end
 
