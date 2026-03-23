@@ -52,13 +52,18 @@ source ~/completion.zsh
 
 source ~/prompt.zsh
 source ~/aliases.zsh
+{{ if eq .machine "work" -}}
 source ~/aws.zsh
+{{ end -}}
 source ~/secrets.zsh
 
 # +------+
 # | PATH |
 # +------+
 
+{{ if eq .machine "work" -}}
+export PATH="$HOME/.zsh/bin:$PATH"
+{{ end -}}
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init - zsh)"
