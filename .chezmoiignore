@@ -1,5 +1,9 @@
 .aws
 
+{{ if ne .machine "work" }}
+.zsh/bin/aws-sso-switch
+{{ end }}
+
 # macOS-only files
 {{ if ne .chezmoi.os "darwin" }}
 dot_Brewfile.tmpl

@@ -76,3 +76,7 @@ export PATH="/usr/local/opt/tcl-tk/bin:$PATH"
 {{ end -}}
 export PATH="/opt/homebrew/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+{{ if eq .machine "work" -}}
+# Prefer Homebrew keg-only node@24 (CDKTF and other tools require Node 24.x, not 25)
+export PATH="/opt/homebrew/opt/node@24/bin:$PATH"
+{{ end -}}

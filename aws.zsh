@@ -1,3 +1,9 @@
+# Per-profile console region overrides (default: us-east-1)
+typeset -gA AWS_CONSOLE_REGIONS=(
+    # example-profile us-west-2
+)
+AWS_CONSOLE_DEFAULT_REGION="us-east-1"
+
 # AWS CLI helper function
 function aws() {
   if [[ "$1" == "switch" ]]; then
@@ -7,7 +13,9 @@ function aws() {
   elif [[ "$1" == "login" ]]; then
     aws-sso-util login
   elif [[ "$1" == "console" ]]; then
-    aws-sso-switch --console "${AWS_PROFILE:-}"
+    local profile="${AWS_PROFILE:-}"
+    local region="${AWS_CONSOLE_REGIONS[$profile]:-$AWS_CONSOLE_DEFAULT_REGION}"
+    aws-sso-switch --console --region "$region" "$profile"
   elif [[ "$1" == "local" ]]; then
     export AWS_ENDPOINT_URL="http://localhost:4566"
     export AWS_ACCESS_KEY_ID="test"

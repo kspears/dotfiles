@@ -1,0 +1,460 @@
+#!/usr/bin/env zsh
+#
+# AWS SSO Account Switcher
+# Allows easy switching between AWS SSO accounts with a default account option
+#
+
+AWS_SSO_CONFIG_DIR="$HOME/.aws/sso"
+AWS_SSO_DEFAULT_FILE="$AWS_SSO_CONFIG_DIR/default-profile"
+AWS_SSO_CURRENT_FILE="$AWS_SSO_CONFIG_DIR/current-profile"
+AWS_SSO_HISTORY_FILE="$AWS_SSO_CONFIG_DIR/profile-history"
+AWS_SSO_HISTORY_SIZE=100  # Keep last N profile switches for frequency tracking
+
+# Ensure config directory exists
+mkdir -p "$AWS_SSO_CONFIG_DIR"
+
+# Function to get available AWS SSO profiles
+get_sso_profiles() {
+    if [[ ! -f "$HOME/.aws/config" ]]; then
+        echo "No AWS config file found at ~/.aws/config" >&2
+        return 1
+    fi
+    
+    # Extract SSO profiles from AWS config
+    # Handles both old format (sso_start_url directly in profile) and new format (sso_session reference)
+    local current_profile=""
+    local has_sso=0
+    local profiles=()
+    
+    while IFS= read -r line; do
+        # Check if this is a profile section
+        if [[ "$line" =~ '^\[profile ' ]]; then
+            # Save previous profile if it had SSO
+            if [[ -n "$current_profile" && $has_sso -eq 1 ]]; then
+                profiles+=("$current_profile")
+            fi
+            # Extract profile name
+            current_profile=$(echo "$line" | sed 's/^\[profile //; s/\]$//')
+            has_sso=0
+        # Check if this is the start of a new section (not a profile)
+        elif [[ "$line" =~ '^\[' ]]; then
+            # End of current section, save profile if it had SSO
+            if [[ -n "$current_profile" && $has_sso -eq 1 ]]; then
+                profiles+=("$current_profile")
+            fi
+            current_profile=""
+            has_sso=0
+        # Check if current profile has SSO configuration
+        elif [[ -n "$current_profile" ]] && [[ "$line" =~ '^sso_start_url' || "$line" =~ '^sso_session' ]]; then
+            has_sso=1
+        fi
+    done < "$HOME/.aws/config"
+    
+    # Don't forget the last profile
+    if [[ -n "$current_profile" && $has_sso -eq 1 ]]; then
+        profiles+=("$current_profile")
+    fi
+    
+    # Output sorted unique profiles
+    printf '%s\n' "${profiles[@]}" | sort -u
+}
+
+# Function to set default profile
+set_default_profile() {
+    local profile="$1"
+    
+    if [[ -z "$profile" ]]; then
+        echo "Usage: aws-sso-switch --set-default <profile-name>" >&2
+        return 1
+    fi
+    
+    # Verify profile exists
+    if ! get_sso_profiles | grep -Fxq "$profile"; then
+        echo "Error: Profile '$profile' not found in AWS config" >&2
+        echo "Available profiles:" >&2
+        get_sso_profiles | sed 's/^/  - /' >&2
+        return 1
+    fi
+    
+    echo "$profile" > "$AWS_SSO_DEFAULT_FILE"
+    echo "Default profile set to: $profile"
+}
+
+# Function to get default profile
+get_default_profile() {
+    if [[ -f "$AWS_SSO_DEFAULT_FILE" ]]; then
+        cat "$AWS_SSO_DEFAULT_FILE" | tr -d '\n'
+    fi
+}
+
+# Function to record profile usage for frequency tracking
+record_profile_usage() {
+    local profile="$1"
+    
+    # Add profile to history
+    echo "$profile" >> "$AWS_SSO_HISTORY_FILE"
+    
+    # Trim history to last N entries
+    if [[ -f "$AWS_SSO_HISTORY_FILE" ]]; then
+        local line_count=$(wc -l < "$AWS_SSO_HISTORY_FILE" | tr -d ' ')
+        if [[ $line_count -gt $AWS_SSO_HISTORY_SIZE ]]; then
+            local temp_file=$(mktemp)
+            tail -n "$AWS_SSO_HISTORY_SIZE" "$AWS_SSO_HISTORY_FILE" > "$temp_file"
+            mv "$temp_file" "$AWS_SSO_HISTORY_FILE"
+        fi
+    fi
+}
+
+# Function to get profiles sorted by usage frequency (most used first)
+get_profiles_by_frequency() {
+    local all_profiles=$(get_sso_profiles)
+    
+    if [[ ! -f "$AWS_SSO_HISTORY_FILE" ]]; then
+        # No history yet, return alphabetically sorted
+        echo "$all_profiles"
+        return
+    fi
+    
+    # Count frequency of each profile in history and sort by count (descending)
+    # Then append any profiles not in history (alphabetically)
+    local sorted_by_freq=$(sort "$AWS_SSO_HISTORY_FILE" | uniq -c | sort -rn | awk '{print $2}')
+    
+    # Output frequent profiles first (in frequency order)
+    local seen_profiles=()
+    while IFS= read -r profile; do
+        # Only include if it's still a valid profile
+        if echo "$all_profiles" | grep -Fxq "$profile"; then
+            echo "$profile"
+            seen_profiles+=("$profile")
+        fi
+    done <<< "$sorted_by_freq"
+    
+    # Append any profiles not in history (alphabetically)
+    while IFS= read -r profile; do
+        local found=false
+        for seen in "${seen_profiles[@]}"; do
+            if [[ "$seen" == "$profile" ]]; then
+                found=true
+                break
+            fi
+        done
+        if [[ "$found" == "false" ]]; then
+            echo "$profile"
+        fi
+    done <<< "$all_profiles"
+}
+
+# Function to switch to a profile
+switch_to_profile() {
+    local profile="$1"
+    
+    if [[ -z "$profile" ]]; then
+        # Use default if no profile specified
+        profile=$(get_default_profile)
+        if [[ -z "$profile" ]]; then
+            echo "Error: No profile specified and no default profile set" >&2
+            echo "Usage: aws-sso-switch <profile-name>" >&2
+            echo "   or: aws-sso-switch --set-default <profile-name> first" >&2
+            return 1
+        fi
+        echo "Using default profile: $profile"
+    fi
+    
+    # Verify profile exists (use -F for fixed string matching to handle special chars)
+    if ! get_sso_profiles | grep -Fxq "$profile"; then
+        echo "Error: Profile '$profile' not found in AWS config" >&2
+        echo "Available profiles:" >&2
+        get_sso_profiles | sed 's/^/  - /' >&2
+        return 1
+    fi
+    
+    # Check if we already have a valid session
+    local session_valid=false
+    if aws sts get-caller-identity --profile "$profile" &>/dev/null; then
+        session_valid=true
+    fi
+    
+    # Only login if session is not valid
+    if [[ "$session_valid" == "false" ]]; then
+        echo "Logging in to AWS SSO profile: $profile" >&2
+        if ! aws sso login --profile "$profile"; then
+            echo "Error: Failed to login to profile: $profile" >&2
+            return 1
+        fi
+    else
+        echo "Using existing valid session for profile: $profile" >&2
+    fi
+    
+    # Store current profile in file
+    echo "$profile" > "$AWS_SSO_CURRENT_FILE"
+    
+    # Record usage for frequency tracking
+    record_profile_usage "$profile"
+    
+    # Output export command for eval (this allows the parent shell to set AWS_PROFILE)
+    echo "export AWS_PROFILE=\"$profile\""
+    echo "✓ Successfully switched to profile: $profile" >&2
+    echo "  AWS_PROFILE is now set to: $profile" >&2
+    echo "  You can now use AWS CLI commands with this profile." >&2
+}
+
+# Function to list available profiles
+list_profiles() {
+    local default_profile=$(get_default_profile)
+    local profiles=$(get_sso_profiles)
+    
+    if [[ -z "$profiles" ]]; then
+        echo "No AWS SSO profiles found in ~/.aws/config" >&2
+        return 1
+    fi
+    
+    echo "Available AWS SSO profiles:"
+    echo ""
+    while IFS= read -r profile; do
+        if [[ "$profile" == "$default_profile" ]]; then
+            echo "  * $profile (default)"
+        else
+            echo "    $profile"
+        fi
+    done <<< "$profiles"
+    echo ""
+    if [[ -n "$default_profile" ]]; then
+        echo "Current default: $default_profile"
+    else
+        echo "No default profile set. Use --set-default to set one."
+    fi
+}
+
+# Function to show current profile
+show_current() {
+    local current_profile="${AWS_PROFILE:-$(aws configure get profile.default 2>/dev/null || echo 'none')}"
+    local default_profile=$(get_default_profile)
+    
+    echo "Current AWS_PROFILE: $current_profile"
+    if [[ -n "$default_profile" ]]; then
+        echo "Default profile: $default_profile"
+    else
+        echo "No default profile set"
+    fi
+}
+
+# Function to open AWS Console for a profile
+open_console() {
+    local profile=""
+    local region=""
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --region|-r)
+                region="$2"
+                shift 2
+                ;;
+            *)
+                profile="$1"
+                shift
+                ;;
+        esac
+    done
+
+    if [[ -z "$profile" ]]; then
+        profile="${AWS_PROFILE:-$(get_default_profile)}"
+        if [[ -z "$profile" ]]; then
+            echo "Error: No profile specified and no default profile set" >&2
+            echo "Usage: aws-sso-switch --console [--region REGION] [profile-name]" >&2
+            return 1
+        fi
+        echo "Using profile: $profile" >&2
+    fi
+    
+    # Verify profile exists (use -F for fixed string matching to handle special chars like parentheses)
+    if ! get_sso_profiles | grep -Fxq "$profile"; then
+        echo "Error: Profile '$profile' not found in AWS config" >&2
+        echo "Available profiles:" >&2
+        get_sso_profiles | sed 's/^/  - /' >&2
+        return 1
+    fi
+    
+    # Check if we already have a valid session, login if not
+    if ! aws sts get-caller-identity --profile "$profile" &>/dev/null; then
+        echo "Logging in to AWS SSO profile: $profile" >&2
+        if ! aws sso login --profile "$profile"; then
+            echo "Error: Failed to login to profile: $profile" >&2
+            return 1
+        fi
+    fi
+    
+    # Get credentials
+    local creds creds_error
+    creds_error=$(aws configure export-credentials --profile "$profile" 2>&1)
+    if [[ $? -ne 0 ]]; then
+        echo "Error: Could not get credentials for profile: $profile" >&2
+        echo "Details: $creds_error" >&2
+        return 1
+    fi
+    creds="$creds_error"
+    
+    if [[ -z "$creds" ]]; then
+        echo "Error: Empty credentials returned for profile: $profile" >&2
+        return 1
+    fi
+    
+    # Extract credentials
+    local access_key secret_key session_token
+    access_key=$(echo "$creds" | jq -r '.AccessKeyId')
+    secret_key=$(echo "$creds" | jq -r '.SecretAccessKey')
+    session_token=$(echo "$creds" | jq -r '.SessionToken')
+    
+    if [[ -z "$access_key" || "$access_key" == "null" ]]; then
+        echo "Error: Could not extract credentials" >&2
+        return 1
+    fi
+    
+    # Create the session JSON for federation
+    local session_json
+    session_json=$(jq -n \
+        --arg sessionId "$access_key" \
+        --arg sessionKey "$secret_key" \
+        --arg sessionToken "$session_token" \
+        '{sessionId: $sessionId, sessionKey: $sessionKey, sessionToken: $sessionToken}')
+    
+    # URL encode the session
+    local encoded_session
+    encoded_session=$(echo -n "$session_json" | python3 -c "import sys, urllib.parse; print(urllib.parse.quote(sys.stdin.read()))")
+    
+    # Get the federation signin token
+    local federation_url="https://signin.aws.amazon.com/federation?Action=getSigninToken&SessionDuration=43200&Session=$encoded_session"
+    local signin_token
+    signin_token=$(curl -s "$federation_url" | jq -r '.SigninToken')
+    
+    if [[ -z "$signin_token" || "$signin_token" == "null" ]]; then
+        echo "Error: Could not get signin token from AWS federation endpoint" >&2
+        return 1
+    fi
+    
+    # Construct the final console URL
+    local destination
+    if [[ -n "$region" ]]; then
+        destination="https%3A%2F%2F${region}.console.aws.amazon.com%2Fconsole%2Fhome%3Fregion%3D${region}"
+    else
+        destination="https%3A%2F%2Fconsole.aws.amazon.com%2F"
+    fi
+    local console_url="https://signin.aws.amazon.com/federation?Action=login&Issuer=aws-sso-switch&Destination=${destination}&SigninToken=$signin_token"
+    
+    echo "Opening AWS Console for profile: $profile${region:+ (region: $region)}" >&2
+    
+    # Open the URL in the default browser
+    if command -v open &>/dev/null; then
+        open "$console_url"
+    elif command -v xdg-open &>/dev/null; then
+        xdg-open "$console_url"
+    else
+        echo "Please open this URL in your browser:" >&2
+        echo "$console_url"
+    fi
+}
+
+# Function to interactively select a profile using fzf
+select_profile_interactive() {
+    local profiles=$(get_profiles_by_frequency)
+    local default_profile=$(get_default_profile)
+    
+    if [[ -z "$profiles" ]]; then
+        echo "No AWS SSO profiles found in ~/.aws/config" >&2
+        return 1
+    fi
+    
+    # Check if fzf is available
+    if ! command -v fzf &> /dev/null; then
+        echo "Error: fzf is not installed. Please install it to use interactive selection." >&2
+        echo "You can install it with: brew install fzf" >&2
+        list_profiles
+        return 1
+    fi
+    
+    # Format profiles for fzf with default indicator
+    # Profiles are already sorted by frequency (most used first)
+    local formatted_profiles=$(while IFS= read -r profile; do
+        if [[ "$profile" == "$default_profile" ]]; then
+            echo "$profile (default)"
+        else
+            echo "$profile"
+        fi
+    done <<< "$profiles")
+    
+    # Use fzf to select a profile
+    # --no-sort: preserve frequency order
+    # --layout=reverse: display list from top, cursor starts at top (most frequent)
+    local selected=$(echo "$formatted_profiles" | fzf --no-sort --layout=reverse --height=40% --border --prompt="Select AWS SSO profile: " --header="Sorted by frequency. Type to search, Enter to select")
+    
+    if [[ -z "$selected" ]]; then
+        echo "No profile selected"
+        return 1
+    fi
+    
+    # Extract profile name (remove "(default)" suffix if present)
+    local profile_name=$(echo "$selected" | sed 's/ (default)$//')
+    
+    # Switch to selected profile
+    switch_to_profile "$profile_name"
+}
+
+# Main command handler
+main() {
+    case "$1" in
+        --list|-l)
+            list_profiles
+            ;;
+        --set-default|-d)
+            set_default_profile "$2"
+            ;;
+        --current|-c)
+            show_current
+            ;;
+        --console|-o)
+            shift
+            open_console "$@"
+            return $?
+            ;;
+        --help|-h)
+            cat << EOF
+AWS SSO Account Switcher
+
+Usage:
+  aws-sso-switch [profile-name]     Switch to specified profile
+  aws-sso-switch                    Interactive profile selection (fzf)
+  aws-sso-switch --list             List all available SSO profiles
+  aws-sso-switch --set-default <profile>  Set default profile
+  aws-sso-switch --current          Show current profile
+  aws-sso-switch --console [--region REGION] [profile]  Open AWS Console in browser
+  aws-sso-switch --help             Show this help message
+
+Options:
+  -l, --list          List all available SSO profiles
+  -d, --set-default   Set the default profile
+  -c, --current       Show current profile
+  -o, --console       Open AWS Console in browser for profile
+  -r, --region        Set console region (used with --console)
+  -h, --help          Show this help message
+
+Examples:
+  aws-sso-switch --set-default production
+  aws-sso-switch production
+  aws-sso-switch                    # Interactive selection with fzf
+  aws-sso-switch --list
+  aws-sso-switch --console          # Open console for current/default profile
+  aws-sso-switch --console staging  # Open console for specific profile
+  aws-sso-switch --console --region us-west-2  # Open console in us-west-2
+EOF
+            ;;
+        "")
+            # No arguments - interactive selection with fzf
+            select_profile_interactive
+            ;;
+        *)
+            # Profile name provided
+            switch_to_profile "$1"
+            ;;
+    esac
+}
+
+main "$@"
