@@ -167,6 +167,14 @@ hl("DiffChange", { bg = "#1a1f2a" })
 hl("DiffDelete", { fg = c.red, bg = "#2a1a1a" })
 hl("DiffText", { bg = "#2a2f3a" })
 
+-- Bufferline
+hl("BufLineFill", { bg = c.black })
+hl("BufLineActive", { fg = c.white_bright, bg = c.visual, bold = true })
+hl("BufLineActiveMod", { fg = c.accent, bg = c.visual, bold = true })
+hl("BufLineInactive", { fg = c.comment, bg = c.black })
+hl("BufLineInactiveMod", { fg = c.yellow_bright, bg = c.black })
+hl("BufLineSep", { fg = c.gutter, bg = c.black })
+
 -- Misc
 hl("Added", { fg = c.green })
 hl("Changed", { fg = c.yellow })

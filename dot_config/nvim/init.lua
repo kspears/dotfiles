@@ -75,6 +75,15 @@ map("n", "<S-h>", "<cmd>bprevious<cr>")
 map("n", "<S-l>", "<cmd>bnext<cr>")
 map("n", "<leader>bd", "<cmd>bdelete<cr>", { desc = "Delete buffer" })
 
+for i = 1, 9 do
+  map("n", "<leader>" .. i, function()
+    local listed = vim.tbl_filter(function(b)
+      return vim.bo[b].buflisted and vim.api.nvim_buf_get_name(b) ~= ""
+    end, vim.api.nvim_list_bufs())
+    if listed[i] then vim.api.nvim_set_current_buf(listed[i]) end
+  end, { desc = "Buffer " .. i })
+end
+
 -- Clear search
 map("n", "<Esc>", "<cmd>nohlsearch<cr>")
 
@@ -141,11 +150,18 @@ if vim.fn.executable("fzf") == 1 then
   end, { desc = "Find files" })
 
   map("n", "<leader>fb", function()
+    local cwd = vim.fn.getcwd() .. "/"
+    local cur = vim.api.nvim_get_current_buf()
+    local alt = vim.fn.bufnr("#")
     local bufs = {}
     for _, b in ipairs(vim.api.nvim_list_bufs()) do
       if vim.api.nvim_buf_is_loaded(b) then
         local name = vim.api.nvim_buf_get_name(b)
-        if name ~= "" then table.insert(bufs, name) end
+        if name ~= "" then
+          local rel = name:sub(1, #cwd) == cwd and name:sub(#cwd + 1) or name
+          local prefix = b == cur and "% " or b == alt and "# " or "  "
+          table.insert(bufs, prefix .. rel)
+        end
       end
     end
     if #bufs == 0 then
@@ -153,8 +169,12 @@ if vim.fn.executable("fzf") == 1 then
       return
     end
     local input = table.concat(bufs, "\n")
-    fzf_float("echo " .. vim.fn.shellescape(input) .. " | fzf --reverse",
-      function(f) vim.cmd("edit " .. vim.fn.fnameescape(f)) end)
+    fzf_float("echo " .. vim.fn.shellescape(input)
+      .. " | fzf --reverse --nth=2.. --preview 'head -80 {2..}'",
+      function(line)
+        local f = line:gsub("^[%%#]?%s+", "")
+        vim.cmd("edit " .. vim.fn.fnameescape(f))
+      end)
   end, { desc = "Find buffers" })
 
   map("n", "<leader>sg", function()
@@ -539,6 +559,43 @@ local kitty_pid = vim.fn.getenv("KITTY_PID")
 if kitty_pid ~= vim.NIL and kitty_pid ~= "" then
   pcall(vim.fn.serverstart, "/tmp/nvim-kitty-" .. kitty_pid .. ".sock")
 end
+
+-- ── Bufferline ──────────────────────────────────────────────────────
+vim.opt.showtabline = 2
+
+vim.cmd([[
+  function! BuflineSwitch(buf, clicks, btn, flags)
+    execute 'buffer' a:buf
+  endfunction
+]])
+
+function Bufferline()
+  local cwd = vim.fn.getcwd() .. "/"
+  local cur = vim.api.nvim_get_current_buf()
+  local parts = { "%#BufLineFill# " }
+
+  for _, b in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.bo[b].buflisted and vim.api.nvim_buf_get_name(b) ~= "" then
+      local name = vim.api.nvim_buf_get_name(b)
+      local rel = name:sub(1, #cwd) == cwd and name:sub(#cwd + 1) or vim.fn.fnamemodify(name, ":~")
+      local modified = vim.bo[b].modified
+      local active = b == cur
+      local hl_group
+      if active then
+        hl_group = modified and "%#BufLineActiveMod#" or "%#BufLineActive#"
+      else
+        hl_group = modified and "%#BufLineInactiveMod#" or "%#BufLineInactive#"
+      end
+      local label = " " .. rel .. (modified and " ●" or "") .. " "
+      table.insert(parts, "%#BufLineSep#│" .. hl_group .. "%" .. b .. "@BuflineSwitch@" .. label .. "%X")
+    end
+  end
+
+  table.insert(parts, "%#BufLineSep#│%#BufLineFill#%=")
+  return table.concat(parts)
+end
+
+vim.opt.tabline = "%!v:lua.Bufferline()"
 
 -- ── Colorscheme ──────────────────────────────────────────────────────
 vim.cmd.colorscheme("ayu-dark")
