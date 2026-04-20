@@ -49,6 +49,26 @@ if [[ -f "$HOME/.aws/sso/current-profile" ]]; then
   export AWS_PROFILE=$(cat "$HOME/.aws/sso/current-profile" | tr -d '\n')
 fi
 
+function aws_kube() {
+  local region="${1:-${AWS_DEFAULT_REGION:-us-east-1}}"
+  local clusters
+  clusters=$(command aws eks list-clusters --region "$region" --query 'clusters[]' --output text 2>&1) || {
+    echo "Failed to list clusters: $clusters" >&2
+    return 1
+  }
+  if [[ -z "$clusters" ]]; then
+    echo "No EKS clusters found in $region"
+    return 0
+  fi
+  local count=0
+  for cluster in ${(z)clusters}; do
+    echo "Adding $cluster ($region)..."
+    command aws eks update-kubeconfig --name "$cluster" --region "$region" --alias "$cluster" || continue
+    ((++count))
+  done
+  echo "Added $count cluster(s). Use kubectx to switch."
+}
+
 function aws_rdp() { aws ec2-instance-connect open-tunnel --remote-port 3389 --local-port 13389 --instance-id "$@"; }
 function aws_ssh() { aws ec2-instance-connect ssh --instance-id "$@"; }
 function aws_console() { aws-sso-util console launch-from-config; }

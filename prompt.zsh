@@ -18,10 +18,62 @@ _git_info() {
   print -n " %F{$_c_green}($branch$dirty)%f"
 }
 
-# ---- AWS profile (only when set) ----
+# ---- AWS profile + SSO token countdown (only when set) ----
+_aws_sso_ttl() {
+  local cache_dir="$HOME/.aws/sso/cache"
+  [[ -d "$cache_dir" ]] || return 1
+
+  # Single python invocation scans the whole cache dir and emits
+  # "<expiresAt> <refresh|fixed>" for the newest SSO session token.
+  local token_info
+  token_info=$(python3 - "$cache_dir" 2>/dev/null <<'PY'
+import glob, json, os, sys
+newest_exp = ""
+has_refresh = False
+for f in glob.glob(os.path.join(sys.argv[1], "*.json")):
+    try:
+        d = json.load(open(f))
+    except Exception:
+        continue
+    if "startUrl" not in d:
+        continue
+    exp = d.get("expiresAt", "")
+    if exp and exp > newest_exp:
+        newest_exp = exp
+        has_refresh = "refreshToken" in d
+if newest_exp:
+    print(newest_exp, "refresh" if has_refresh else "fixed")
+PY
+)
+  [[ -z "$token_info" ]] && return 1
+
+  local exp="${token_info% *}"
+  local token_type="${token_info##* }"
+
+  # Tokens with a refreshToken auto-renew; the 1h expiresAt is just the access token TTL
+  [[ "$token_type" == refresh ]] && return 0
+
+  local epoch now remaining
+  epoch=$(date -j -u -f "%Y-%m-%dT%H:%M:%SZ" "$exp" "+%s" 2>/dev/null) || return 1
+  now=$(date -u "+%s")
+  remaining=$(( epoch - now ))
+
+  if (( remaining <= 0 )); then
+    return 1
+  elif (( remaining < 900 )); then
+    print -n " %F{$_c_red}$(( remaining / 60 ))m%f"
+  elif (( remaining < 3600 )); then
+    print -n " %F{$_c_yellow}$(( remaining / 60 ))m%f"
+  else
+    print -n " %F{$_c_gray}$(( remaining / 3600 ))h$(( (remaining % 3600) / 60 ))m%f"
+  fi
+}
+
 _aws_info() {
   [[ -n "$AWS_PROFILE" ]] || return
-  print -n " %F{$_c_yellow}aws:$AWS_PROFILE%f"
+  local ttl
+  ttl=$(_aws_sso_ttl) || return
+  print -n " %F{$_c_yellow}aws:$AWS_PROFILE%f$ttl"
 }
 
 # ---- k8s context (only when set) ----
@@ -60,7 +112,7 @@ add-zsh-hook preexec _preexec
 add-zsh-hook precmd _precmd
 
 # ---- Prompt ----
-# [14:23] ~/code/dotfiles (master*) aws:prod ⎈ my-cluster 3s
+# [14:23] ~/code/dotfiles (master*) aws:prod 4h23m ⎈ my-cluster 3s
 # ❯
 PROMPT='%F{$_c_gray}[%D{%H:%M}]%f %F{$_c_blue}%~%f$(_git_info)$(_aws_info)$(_k8s_info)${_cmd_duration}
 %(?.%F{$_c_green}.%F{$_c_red})❯%f '
