@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# reset-network — reset Wi‑Fi + wired, flush DNS. Workaround for VPN flakiness.
+# reset-network — reset Wi-Fi + wired, flush DNS. Workaround for VPN flakiness.
 # macOS only.
 
 set -e
@@ -13,21 +13,40 @@ echo "Flushing DNS..."
 sudo dscacheutil -flushcache
 sudo killall -HUP mDNSResponder 2>/dev/null || true
 
+# Detect Wi-Fi + Ethernet-like services dynamically. The first line of
+# `-listallnetworkservices` is a header; services prefixed with "*" are
+# currently disabled, so we skip them to preserve prior state.
+previously_enabled=()
+while IFS= read -r line; do
+  [[ -z "$line" ]] && continue
+  [[ "$line" == \** ]] && continue
+  # Thunderbolt Bridge is an internal p2p interface, not an uplink.
+  [[ "$line" == "Thunderbolt Bridge" ]] && continue
+  previously_enabled+=("$line")
+done < <(
+  networksetup -listallnetworkservices 2>/dev/null \
+    | tail -n +2 \
+    | grep -Ei '(Wi-?Fi|Ethernet|LAN)'
+)
+
+if [[ ${#previously_enabled[@]} -eq 0 ]]; then
+  echo "No enabled Wi-Fi or Ethernet services found."
+  exit 0
+fi
+
 echo "Turning off network services..."
-for service in "Wi-Fi" "Thunderbolt Ethernet" "USB 10/100/1000 LAN" "Ethernet" "Display Ethernet"; do
-  if networksetup -getnetworkserviceenabled "$service" 2>/dev/null | grep -q Enabled; then
-    sudo networksetup -setnetworkserviceenabled "$service" off
-  fi
+for name in "${previously_enabled[@]}"; do
+  echo "  - $name"
+  sudo networksetup -setnetworkserviceenabled "$name" off
 done
 
 echo "Waiting 3 seconds..."
 sleep 3
 
 echo "Turning on network services..."
-for service in "Wi-Fi" "Thunderbolt Ethernet" "USB 10/100/1000 LAN" "Ethernet" "Display Ethernet"; do
-  if networksetup -listnetworkserviceorder 2>/dev/null | grep -q "$service"; then
-    sudo networksetup -setnetworkserviceenabled "$service" on
-  fi
+for name in "${previously_enabled[@]}"; do
+  echo "  - $name"
+  sudo networksetup -setnetworkserviceenabled "$name" on
 done
 
 echo "Done."
