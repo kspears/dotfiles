@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# agent-tab-status — flag the terminal tab when an AI coding agent (Claude Code,
+# Cursor CLI, …) is waiting on you vs. busy working. Wired up from each agent's
+# hooks. In kitty it targets the exact window and recolors the tab; in any other
+# terminal it falls back to an OSC title + bell written to the controlling tty.
+#
+# Usage: agent-tab-status <waiting|busy> [agent-name]
+
+state="$1"
+agent="${2:-agent}"
+
+# Hooks run with cwd at the project root; Cursor also exports CURSOR_PROJECT_DIR.
+dir=$(basename "${CURSOR_PROJECT_DIR:-$PWD}")
+
+if [[ "$state" == waiting ]]; then
+  title="⏳ ${agent} [${dir}]"
+else
+  title="${agent} [${dir}]"
+fi
+
+if [[ -n "$KITTY_LISTEN_ON" ]]; then
+  match=()
+  [[ -n "$KITTY_WINDOW_ID" ]] && match=(-m "window_id:$KITTY_WINDOW_ID")
+  kitty @ set-tab-title "${match[@]}" "$title" 2>/dev/null
+  if [[ "$state" == waiting ]]; then
+    kitty @ set-tab-color "${match[@]}" \
+      active_bg='#e6b450' active_fg='#0b0e14' \
+      inactive_bg='#e6b450' inactive_fg='#0b0e14' 2>/dev/null
+  else
+    kitty @ set-tab-color "${match[@]}" \
+      active_bg=NONE active_fg=NONE inactive_bg=NONE inactive_fg=NONE 2>/dev/null
+  fi
+else
+  # OSC 2 sets the tab/window title in essentially any terminal.
+  printf '\033]2;%s\007' "$title" > /dev/tty 2>/dev/null
+  # Bell makes an unfocused tab light up where we can't recolor it.
+  [[ "$state" == waiting ]] && printf '\a' > /dev/tty 2>/dev/null
+fi
+
+exit 0

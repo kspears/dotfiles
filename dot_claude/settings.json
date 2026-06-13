@@ -26,6 +26,9 @@
       "Bash(sed *)",
       "Bash(grep *)",
       "Bash(find *)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(rg:*)",
       "Bash(echo *)",
       "Bash(less *)",
       "Bash(more *)",
@@ -38,16 +41,126 @@
       "Bash(open *)",
       "Bash(pbcopy)",
       "Bash(pbpaste)",
-      "Bash(sleep *)"
+      "Bash(sleep *)",
+      "Bash(git -C *)",
+      "Bash(git push *)",
+      "Bash(git pull *)",
+      "Bash(git worktree *)",
+      "Bash(git mv *)",
+      "Bash(gh pr *)",
+      "Bash(gh run *)",
+      "Bash(gh api *)",
+      "Bash(gh repo *)",
+      "Bash(gh release *)",
+      "Bash(kubectl get *)",
+      "Bash(kubectl logs *)",
+      "Bash(kubectl describe *)",
+      "Bash(kubectl rollout *)",
+      "Bash(kubectl top *)",
+      "Bash(kubectl wait *)",
+      "Bash(kubectl apply *)",
+      "Bash(kubectl run *)",
+      "Bash(kubectl drain *)",
+      "Bash(kubectl uncordon *)",
+      "Bash(kubectl cordon *)",
+      "Bash(dig *)",
+      "Bash(nslookup *)",
+      "Bash(helm list *)",
+      "Bash(helm search *)",
+      "Bash(helm show *)",
+      "Bash(helm template *)",
+      "Bash(helm repo *)"
     ]
   },
-  "model": "sonnet",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/rules-hygiene.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/block-secret-dumps.py"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/git-safety.py"
+          }
+        ]
+      },
+      {
+        "matcher": "ExitPlanMode",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/plan-review-gate.py"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/redact-secrets.py"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/agent-tab-status waiting claude"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/agent-tab-status waiting claude"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/agent-tab-status busy claude"
+          }
+        ]
+      }
+    ]
+  },
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
   },
   "enabledPlugins": {
     "rust-analyzer-lsp@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true
-  }
+    "typescript-lsp@claude-plugins-official": true,
+    "swift-lsp@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "semgrep@claude-plugins-official": false
+  },
+  "effortLevel": "high",
+  "skipAutoPermissionPrompt": true
 }

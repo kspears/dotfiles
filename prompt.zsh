@@ -54,6 +54,8 @@ _precmd() {
   fi
   _cmd_start=0
   _kitty_title zsh
+  # Clear any leftover tab color from an agent (claude/cursor) that left it "waiting".
+  [[ -n "$KITTY_LISTEN_ON" ]] && kitty @ set-tab-color active_bg=NONE active_fg=NONE inactive_bg=NONE inactive_fg=NONE 2>/dev/null
 }
 
 add-zsh-hook preexec _preexec
