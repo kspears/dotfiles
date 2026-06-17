@@ -1,0 +1,138 @@
+# =============================================================================
+# Ghostty config — translated from kitty.conf (Ayu Dark, Hack)
+# View all options + docs:  ghostty +show-config --default --docs
+# Reload in-app:            cmd+shift+,
+# =============================================================================
+
+# Ghostty sets TERM=xterm-ghostty by default. Override to match old setup.
+# (xterm-ghostty is better, but remote hosts need its terminfo installed.)
+term = xterm-256color
+
+# =============================================================================
+# Font
+# =============================================================================
+font-family = Hack
+font-family-bold = Hack Bold
+font-family-italic = Hack Italic
+font-family-bold-italic = Hack Bold Italic
+font-size = 12
+
+# kitty adjust_line_height/column_width 0  →  no adjustment (defaults)
+# adjust-cell-height = 0
+# adjust-cell-width = 0
+
+# =============================================================================
+# Cursor
+# =============================================================================
+cursor-style = block
+cursor-style-blink = false
+
+# =============================================================================
+# Scrollback (ghostty measures in BYTES, not lines; ~10MB default)
+# =============================================================================
+scrollback-limit = 10000000
+
+# =============================================================================
+# Mouse / selection
+# =============================================================================
+copy-on-select = true
+
+# =============================================================================
+# Window
+# =============================================================================
+window-padding-x = 12
+window-padding-y = 12
+background-opacity = 0.82
+window-width = 220
+window-height = 50
+window-save-state = always
+
+# macOS: use Option as Alt (shell word-jump shortcuts)
+macos-option-as-alt = true
+
+# =============================================================================
+# Bell  (replaces kitty's gold tab-recolor for "agent waiting on you")
+# =============================================================================
+# kitty had enable_audio_bell=no, so no sound. The agent-tab-status hook rings
+# the bell when Claude is waiting; these features turn that into a dock bounce
+# + tab attention/title marker instead of a beep.
+#   attention = bounce dock icon until Ghostty is focused
+#   title     = mark the tab title on bell
+bell-features = attention,title
+
+# =============================================================================
+# Theme — Ayu Dark
+# =============================================================================
+foreground = #b3b1ad
+background = #0a0e14
+selection-foreground = #b3b1ad
+selection-background = #273747
+
+cursor-color = #e6b450
+cursor-text = #0a0e14
+
+# 16-color palette
+palette = 0=#01060e
+palette = 1=#ea6c73
+palette = 2=#91b362
+palette = 3=#f9af4f
+palette = 4=#53bdfa
+palette = 5=#fae994
+palette = 6=#90e1c6
+palette = 7=#c7c7c7
+palette = 8=#686868
+palette = 9=#f07178
+palette = 10=#c2d94c
+palette = 11=#ffb454
+palette = 12=#59c2ff
+palette = 13=#ffee99
+palette = 14=#95e6cb
+palette = 15=#ffffff
+
+# =============================================================================
+# Key bindings
+# =============================================================================
+# Tabs (new_tab inherits cwd automatically in ghostty)
+keybind = cmd+t=new_tab
+keybind = cmd+w=close_surface
+keybind = cmd+]=next_tab
+keybind = cmd+[=previous_tab
+keybind = cmd+1=goto_tab:1
+keybind = cmd+2=goto_tab:2
+keybind = cmd+3=goto_tab:3
+keybind = cmd+4=goto_tab:4
+keybind = cmd+5=goto_tab:5
+keybind = cmd+6=goto_tab:6
+keybind = cmd+7=goto_tab:7
+keybind = cmd+8=goto_tab:8
+keybind = cmd+9=goto_tab:9
+
+# Splits
+keybind = cmd+d=new_split:right
+keybind = cmd+shift+d=new_split:down
+keybind = cmd+shift+]=goto_split:next
+keybind = cmd+shift+[=goto_split:previous
+
+# Pane navigation (ctrl+h/j/k/l — matches neovim splits)
+keybind = ctrl+h=goto_split:left
+keybind = ctrl+j=goto_split:down
+keybind = ctrl+k=goto_split:up
+keybind = ctrl+l=goto_split:right
+
+# Pane resize
+keybind = ctrl+shift+h=resize_split:left,30
+keybind = ctrl+shift+j=resize_split:down,30
+keybind = ctrl+shift+k=resize_split:up,30
+keybind = ctrl+shift+l=resize_split:right,30
+
+# Zoom toggle (like tmux prefix+z)
+keybind = cmd+shift+z=toggle_split_zoom
+
+# Font size
+keybind = cmd+equal=increase_font_size:1
+keybind = cmd+minus=decrease_font_size:1
+keybind = cmd+zero=reset_font_size
+
+# Scrollback
+keybind = cmd+k=scroll_page_up
+keybind = cmd+shift+k=clear_screen
