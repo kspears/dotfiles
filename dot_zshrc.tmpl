@@ -71,6 +71,12 @@ eval "$(pyenv init - --no-rehash zsh)"
 export PATH="${HOMEBREW_PREFIX}/opt/openssl/bin:$PATH"
 {{ end -}}
 {{ if eq .machine "home" -}}
+JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null) && export JAVA_HOME
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+_ndk=$(ls -1 "$ANDROID_HOME/ndk" 2>/dev/null | sort -V | tail -1)
+[[ -n "$_ndk" ]] && export NDK_HOME="$ANDROID_HOME/ndk/$_ndk"
+unset _ndk
+export PATH="$ANDROID_HOME/platform-tools:$PATH"
 export PATH="{{ .chezmoi.homeDir }}/.deno/bin:$PATH"
 export PATH="/usr/local/opt/tcl-tk/bin:$PATH"
 {{ end -}}
