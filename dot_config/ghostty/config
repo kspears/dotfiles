@@ -1,7 +1,7 @@
 # =============================================================================
 # Ghostty config — translated from kitty.conf (Ayu Dark, Hack)
 # View all options + docs:  ghostty +show-config --default --docs
-# Reload in-app:            cmd+shift+,
+# Reload in-app:            cmd+shift+r  (cmd+shift+, is unreliable on macOS layouts)
 # =============================================================================
 
 # Ghostty sets TERM=xterm-ghostty by default. Override to match old setup.
@@ -11,11 +11,12 @@ term = xterm-256color
 # =============================================================================
 # Font
 # =============================================================================
-font-family = Hack
-font-family-bold = Hack Bold
-font-family-italic = Hack Italic
-font-family-bold-italic = Hack Bold Italic
-font-size = 12
+font-family = CaskaydiaCove Nerd Font
+font-family-bold = CaskaydiaCove Nerd Font Bold
+font-family-italic = CaskaydiaCove Nerd Font Italic
+font-family-bold-italic = CaskaydiaCove Nerd Font Bold Italic
+font-size = 13
+
 
 # kitty adjust_line_height/column_width 0  →  no adjustment (defaults)
 # adjust-cell-height = 0
@@ -61,37 +62,40 @@ macos-option-as-alt = true
 bell-features = attention,title
 
 # =============================================================================
-# Theme — Ayu Dark
+# Theme — Ayu Dark (vivid foreground, original dark bg)
 # =============================================================================
-foreground = #b3b1ad
+foreground = #dfdbd5
 background = #0a0e14
-selection-foreground = #b3b1ad
+selection-foreground = #dfdbd5
 selection-background = #273747
 
-cursor-color = #e6b450
+cursor-color = #ffb454
 cursor-text = #0a0e14
 
-# 16-color palette
+# 16-color palette (normal slots use Ayu bright variants)
 palette = 0=#01060e
-palette = 1=#ea6c73
-palette = 2=#91b362
-palette = 3=#f9af4f
-palette = 4=#53bdfa
-palette = 5=#fae994
-palette = 6=#90e1c6
-palette = 7=#c7c7c7
-palette = 8=#686868
-palette = 9=#f07178
-palette = 10=#c2d94c
-palette = 11=#ffb454
-palette = 12=#59c2ff
-palette = 13=#ffee99
-palette = 14=#95e6cb
+palette = 1=#f07178
+palette = 2=#c2d94c
+palette = 3=#ffb454
+palette = 4=#59c2ff
+palette = 5=#ffee99
+palette = 6=#95e6cb
+palette = 7=#e8e6e2
+palette = 8=#8a8a8a
+palette = 9=#ff858b
+palette = 10=#d4f050
+palette = 11=#ffc870
+palette = 12=#6ecaff
+palette = 13=#fff5aa
+palette = 14=#a8f0d8
 palette = 15=#ffffff
 
 # =============================================================================
 # Key bindings
 # =============================================================================
+# Config (cmd+shift+, is the Ghostty default but often fails on macOS layouts)
+keybind = cmd+shift+r=reload_config
+
 # Tabs (new_tab inherits cwd automatically in ghostty)
 keybind = cmd+t=new_tab
 keybind = cmd+w=close_surface
