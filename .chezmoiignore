@@ -9,3 +9,14 @@
 dot_Brewfile.tmpl
 .chezmoiscripts/darwin_*
 {{ end }}
+
+# Work-only Cursor rules (Quanata infra/CI/language stack)
+{{ if ne .machine "work" }}
+dot_cursor/rules/ci-style.mdc
+dot_cursor/rules/docker-style.mdc
+dot_cursor/rules/infrastructure-deployments-terragrunt.mdc
+dot_cursor/rules/infrastructure-modules-ensemble.mdc
+dot_cursor/rules/python-style.mdc
+dot_cursor/rules/ruff-before-push.mdc
+dot_cursor/rules/terraform-style.mdc
+{{ end }}

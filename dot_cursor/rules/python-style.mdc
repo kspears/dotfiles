@@ -1,0 +1,20 @@
+---
+description: Python coding conventions and uv usage
+globs: "**/*.py"
+alwaysApply: false
+---
+
+# Python Style
+
+- **Always use `uv`**. Never use `pip`, `pip install`, `python`, or `python3` directly.
+  - Install deps: `uv add <pkg>` (or `uv add --dev <pkg>`)
+  - Run scripts: `uv run -- python script.py`
+  - Run tools: `uv run -- <tool>` unless a Makefile target exists
+  - Ad-hoc deps: `uv run --with <pkg> python script.py`
+- Type hints on all function signatures. No `Any` unless truly necessary.
+- Use `pathlib.Path` over `os.path`.
+- Prefer f-strings over `.format()` or `%` formatting.
+- Use early returns to reduce nesting.
+- Keep functions short and single-purpose.
+- Tests: use pytest, fixtures, parametrize. Test names should describe the scenario,
+  e.g. `test_returns_empty_list_when_no_results`.

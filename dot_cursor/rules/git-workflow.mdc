@@ -1,0 +1,46 @@
+---
+description: Git branching, history safety, and workflow commands
+alwaysApply: true
+---
+
+# Git Workflow
+
+## Default branch
+
+- **NEVER assume the default branch is `main` or `master`.** Always detect it:
+  ```bash
+  git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'
+  ```
+  If `origin/HEAD` is not set (e.g. after a shallow clone), run `git remote set-head origin --auto` first.
+- Use the detected value for MR target branches, merge bases, and log comparisons — never hardcode `main` or `master`.
+
+## Branching
+
+- **Always create a feature branch** before making code changes. Never commit directly to the default branch.
+- Branch naming: `<TICKET-ID>-short-description` (e.g. `DE-2995-remove-curl-pipe-bash`). If no ticket, use descriptive kebab-case.
+- Create the branch **before** any file edits, not after.
+- When starting a new task, pull the latest default branch first, then create the feature branch from it.
+- **Check for repo-specific branch-name rules before pushing.** Some repos enforce a regex via a `check-branch` CI job (e.g. `infrastructure-modules` and `infrastructure-deployments` require `<JIRA-ID>-<kebab>`, matching `[A-Za-z][A-Za-z0-9]{1,}-[0-9]{2,}`). If the repo has such a check, use that pattern from branch creation — don't create a non-conforming branch and rename later.
+
+**Exception — existing MR/PR:** When the user is clearly working on an open MR/PR (e.g. "address MR feedback", "push to the PR", or they're on the MR branch), stay on that branch. If unsure, ask.
+
+## History safety
+
+- **NEVER** amend a commit that has already been pushed to a remote branch. Always create a new commit instead.
+- **Always use `git merge` (not `git rebase`) when updating a branch from the default branch.** Rebase rewrites history and forces a force push — both are prohibited. Only rebase if the user explicitly requests it and understands the consequences.
+- **NEVER force push** (`--force`, `--force-with-lease`, `-f`). No exceptions. If history needs reconciling, use merge or create a new branch.
+- **Before pushing to a MR branch**, always `git fetch origin` and merge the latest remote changes to avoid conflicts.
+
+## Workflow commands
+
+When the user says **"merge"** (after an MR has been approved):
+1. Merge the MR/branch
+2. Checkout the default branch
+3. Pull the latest
+
+This ensures the workspace is ready for the next task.
+
+When the user says **"MR"** or **"PR"**:
+1. Commit the current work
+2. Follow **MR prep gate** (`mr-prep-gate.mdc`): code-quality → simplify → `mr-prep-pass.sh` → push
+3. Create a merge request (GitLab: `glab mr create`; GitHub: `gh pr create`) — do **not** merge; it needs human review

@@ -1,0 +1,66 @@
+---
+description: Conventions when creating or editing terragrunt units in the infrastructure-deployments repo
+globs: /Users/kevin.spears/code/quanata/infrastructure/infrastructure-deployments/**/terragrunt.hcl
+alwaysApply: false
+---
+
+# infrastructure-deployments: Terragrunt Unit Conventions
+
+Always peer-check 2+ sibling units in the same account/region before writing.
+
+## Module source
+
+- **Pin by version tag, never by branch**, e.g. `?ref=aws-lambda-egress-sg-1.0.0`.
+- Branch refs (`?ref=DE-XXXX-...`) are acceptable only during in-flight MR validation. Flip to a tag before merging to master. CI rejects unpinned sources for non-sandbox envs.
+
+## Brand-new dependencies (the `plan-output` footgun)
+
+When you add a `dependency` block pointing at a unit that **has not yet been applied** in this environment, CI's plan phase fails because the dependency has no outputs. The fix:
+
+```hcl
+dependency "vrs_lambda_egress_sg" {
+  config_path = "../vrs-lambda-egress-sg"
+
+  mock_outputs_allowed_terraform_commands = ["validate"]
+  mock_outputs = {
+    security_group_id = "sg-mock-placeholder"
+  }
+}
+```
+
+**Critical: scope `mock_outputs_allowed_terraform_commands` to `["validate"]` only.** Do **not** include `plan` or `show`.
+
+Why: CI runs `terragrunt plan -out=plan-output` then later `tofu apply plan-output`. If `plan` is in the allowed list, the saved plan bakes in the mock value. Post-merge, the upstream unit applies and the dependency resolves to the real value — but the apply step reads the saved plan and fails with:
+
+> `Error: Mismatch between input and plan variable value`
+
+Allowing only `validate` keeps `terragrunt validate` and config parsing happy, while forcing both `plan` and `apply` to see the real upstream outputs (which means the upstream unit must be applied first — Terragrunt's `dependency` block enforces this).
+
+If both units land in the same MR, CI applies them in dependency order. The mock value is only used for `validate` calls during early CI stages.
+
+## Don't pass `tags` to modules
+
+Most ensembles no longer accept a `tags` input — the provider supplies default tags. Mirror the inputs of neighboring units that use the same ensemble.
+
+## VPC inputs
+
+The VPC ensemble exports `name`. Pass `dependency.vpc.outputs.name` rather than hardcoding `de-sbx` / `de-dev` / `de-prod`.
+
+## Branch naming and CI
+
+- Branch name must match `<JIRA-ID>-<kebab>` (e.g. `DE-3396-vrs-lambda-egress-sg`).
+- Never run `terragrunt plan` / `apply` locally — AGENTS.md prohibits it. Only GitLab CI.
+- CI auto-discovers new units based on changed files. No separate CI config to update.
+
+## Pipeline flake to recognize
+
+If a job fails with `prepare environment: waiting for pod running: timed out waiting for pod to start`, it's a GitLab runner infra flake — not a code issue. Retry the job; do not change code.
+
+## Recovery from plan/apply mismatch
+
+If you do hit `Mismatch between input and plan variable value` post-merge (e.g. mocks leaked into `plan-output`), the recovery is:
+
+1. Retry the upstream `plan:*` job to regenerate `plan-output` with real dependency outputs.
+2. Retry the corresponding `apply:*` job.
+
+No code change is needed — the saved plan artifact is stale, not the configuration.

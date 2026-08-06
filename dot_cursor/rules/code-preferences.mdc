@@ -1,0 +1,22 @@
+---
+description: General coding style and preferences
+alwaysApply: true
+---
+
+# Code Preferences
+
+Style: succinct, readable, simple, rigorous. No cleverness for its own sake.
+
+## Shell / Terminal
+
+- **Every shell tool call requires user approval.** Run one logical step per call so each approval is meaningful and failures are obvious.
+- Never chain independent commands with `&&`, `;`, or `||`. Run them as separate tool calls.
+- This applies inside `docker run ... sh -c "..."` too — run separate `docker run` invocations instead of stuffing multiple commands into one `sh -c` string.
+- The only valid reason to combine commands is when they **must** share the same shell context (e.g. `cd dir && make`).
+
+## General
+
+- Prefer standard library solutions before reaching for third-party packages.
+- Imports: stdlib first, then third-party, then local.
+- No dead code. No commented-out code checked in.
+- Error messages should be actionable -- say what went wrong and what to do about it.

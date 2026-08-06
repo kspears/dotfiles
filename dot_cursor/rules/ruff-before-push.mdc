@@ -1,0 +1,36 @@
+---
+description: Run ruff format and ruff check locally before pushing Python changes. Prevents CI autoformat failures.
+alwaysApply: true
+---
+
+# Ruff Before Push
+
+CI runs `ruff format --check` and (usually) `ruff check` on Python repos. If you push without running them locally, you'll burn a pipeline. Always run them locally first.
+
+## When this applies
+
+Any Python repo that has `ruff` in its dependencies (look in `pyproject.toml`, `uv.lock`, `requirements*.txt`, or `.pre-commit-config.yaml`). Examples in this org: `ds-vehicle-data-service`, `de-service-builder`, most data services.
+
+## Process before any `git push` of Python changes
+
+1. Find the pinned ruff version in the repo (don't guess):
+   ```bash
+   # uv-based repos
+   uv export --no-hashes --no-annotate --frozen | grep '^ruff=='
+   # or
+   grep -E '^\s*ruff' pyproject.toml uv.lock 2>/dev/null
+   ```
+2. Run formatter, then linter, against the files you touched (or the whole project subdir CI runs on — usually `deployments-v2/`, `service_builder/`, etc.):
+   ```bash
+   uvx ruff@<pinned-version> format <path>
+   uvx ruff@<pinned-version> check <path>
+   ```
+3. If `format` made changes, stage them into the same commit as your code change (or amend if not yet pushed) — don't ship a separate "fix ruff" commit if you can avoid it.
+4. Re-run `ruff format --check <path>` to verify it's clean before pushing.
+
+## Notes
+
+- Mirror CI's working directory. Most repos `cd` into a subdir (e.g. `deployments-v2/`) before running ruff — check `.gitlab-ci.yml` if unsure.
+- `ruff format` and `black` formatting differ; never substitute one for the other.
+- If `uvx` can't write to its tool cache in the sandbox, run with elevated permissions — don't skip formatting.
+- This also applies to amends and force-pushes (when explicitly authorized).

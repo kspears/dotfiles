@@ -1,0 +1,37 @@
+---
+description: Mandatory code-quality + simplify + mr-prep-pass before git push or MR creation
+alwaysApply: true
+---
+
+# MR prep gate (before push / MR)
+
+A Cursor shell hook blocks `git push`, `gh pr create`, and `glab mr create` until the current `HEAD` is marked ready. **Always run this full sequence when the user asks for an MR/PR or to push for review** — do not hand off scripts or ask the user to push unless a step fails after you have tried it.
+
+## Required sequence
+
+Run from the **target repo root** (the hook keys off `git rev-parse --show-toplevel`, not `-C` on a different cwd).
+
+1. **Commit** — all intended changes committed on the feature branch.
+2. **Code quality** — read `~/.cursor/skills/code-quality/SKILL.md` and run format, lint, typecheck, and targeted tests for changed paths; fix blockers.
+3. **Simplify** — read `~/.cursor/skills/simplify/SKILL.md` and review the same diff; apply safe simplifications or confirm PASS.
+4. **Mark ready** — must use full permissions (writes outside workspace):
+   ```bash
+   ~/.cursor/hooks/mr-prep-pass.sh /path/to/repo/root
+   ```
+5. **Push** — from that repo root:
+   ```bash
+   git push -u origin HEAD
+   ```
+6. **Create MR/PR** — GitLab: `glab mr create`; GitHub: `gh pr create`. Use `required_permissions: ["all"]` for push and MR commands when needed.
+
+New commits after step 4 invalidate the marker — re-run steps 2–4 before pushing again.
+
+## Do not
+
+- Skip `mr-prep-pass.sh` because quality checks already ran — the hook requires the marker file.
+- Use bash scripts as a substitute for running push/MR yourself.
+- Run `git push` with `-C other-repo` while the shell cwd is a different repo (hook may check the wrong `passed_head`).
+
+## On block
+
+If push/MR is still denied after step 4, verify `passed_head` matches `git rev-parse HEAD` for that repo, then retry push from the repo root.
