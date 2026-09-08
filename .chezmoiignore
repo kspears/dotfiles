@@ -9,3 +9,8 @@
 dot_Brewfile.tmpl
 .chezmoiscripts/darwin_*
 {{ end }}
+
+# Cursor is only used on the work machine
+{{ if ne .machine "work" }}
+.cursor/rules
+{{ end }}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Security Reviewer"
+  short_description: "Audit code for security risks and secrets"
+  default_prompt: "Use $security-reviewer to audit these changes for security issues."
