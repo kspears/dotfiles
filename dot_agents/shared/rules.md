@@ -14,6 +14,7 @@ Agent-agnostic rules — applies to Claude Code, Codex CLI, and any other coding
 - When unsure about intent, ask a short clarifying question rather than guessing.
 - If a request is vague — multiple valid interpretations exist, scope is unclear, or the target isn't specified — interview me before proceeding. Ask all clarifying questions in a single structured message (numbered list). Do not guess or proceed with assumptions.
 - Skip the interview if the request includes a signal like "surprise me", "your call", or "just do something".
+- When asked to build a new feature, app, service, or other sizeable capability and no spec for it exists in the repo (`docs/specs/`), suggest running the `interview-to-spec` skill first. If I decline, proceed normally. Bug fixes and small tweaks don't need a spec.
 
 ## Change Philosophy
 - Make the smallest change that solves the problem.

@@ -41,7 +41,7 @@ This directory is managed by chezmoi as `dot_agents/` in `~/code/dotfiles` — s
 | Agent | Mechanism |
 | --- | --- |
 | Codex CLI | `~/.codex/skills/<name>` is a symlink to `~/.agents/shared/skills/<name>` |
-| Claude Code | Not currently wired. Claude now reads `~/.claude/skills/<name>/SKILL.md`, so symlinking these in the same way Codex does should work — untested. `~/.claude/agents/<name>.md` (subagents) remains a separate, incompatible format. |
+| Claude Code | `~/.claude/skills/<name>` is a symlink to `~/.agents/shared/skills/<name>` (confirmed working 2026-09-08 with `interview-to-spec`; the two older skills are not linked yet). `~/.claude/agents/<name>.md` (subagents) remains a separate, incompatible format. |
 
 ### Memory
 
@@ -56,8 +56,7 @@ Not unified — Claude Code and Codex have incompatible hook schemas. Shell scri
 
 1. Create `~/.agents/shared/skills/<name>/SKILL.md` with minimal frontmatter (`name`, `description`).
 2. Write the body as if no specific agent's tool names are available — speak generically about reading files, running commands, etc.
-3. Symlink `~/.codex/skills/<name> → ~/.agents/shared/skills/<name>`.
-4. (Optional) Port to Claude by writing a thin wrapper in `~/.claude/agents/<name>.md` that includes the SKILL.md body (Claude doesn't auto-discover the shared dir).
+3. Add `dot_codex/skills/symlink_<name>.tmpl` and `dot_claude/skills/symlink_<name>.tmpl` to the dotfiles repo, each containing `{{ .chezmoi.homeDir }}/.agents/shared/skills/<name>`, then `chezmoi apply`. Both agents discover the skill through the symlink.
 
 ## Editing
 
@@ -75,7 +74,7 @@ Edit `shared/rules.md` (per **Editing** above). Claude and Codex pick it up on n
 ## Known followups
 
 - `~/.claude/settings.json` permissions list is past its 120-entry threshold per the startup hook — separate cleanup task.
-- Shared skills are still not wired into Claude (see the Skills table). Worth trying the `~/.claude/skills/` symlink.
+- `code-improver` and `security-reviewer` are not yet symlinked into `~/.claude/skills/`, and their Codex symlinks were made by hand rather than via chezmoi. Convert both to `symlink_*.tmpl` files when convenient.
 - Codex has been unused since 2026-06-22. Wiring is kept because it costs nothing; drop it if that stays true.
 
 ## Backups

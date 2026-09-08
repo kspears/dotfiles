@@ -14,6 +14,7 @@ Claude-specific rules that sit on top of `~/.agents/shared/rules.md`. The shared
 ## Plans
 - When the user says to "start work on a plan" (or equivalent), run `/compact` first before beginning implementation.
 - Plans are saved to `~/.claude/plans/` with random filenames.
+- If a spec for the feature exists in `docs/specs/` (written by the `interview-to-spec` skill), read it before drafting the plan and treat its acceptance criteria as the plan's definition of done.
 - Whenever a plan is created or completed, log it in the project's `MEMORY.md` under a **Saved Plans** table with the filename, feature name, and status (`Ready to implement` / `In progress` / `Done`).
 - **Self-review before presenting**: after writing a plan and BEFORE calling `ExitPlanMode`, launch a no-chat-context subagent (Plan type) whose prompt contains enough background to review the plan standalone — point it at the plan file and any reference files, and ask it to find issues and improvements (return a report, not edits). Apply the needed changes to the plan, then add the literal marker line `<!-- plan-reviewed -->` to the plan file. Only then call `ExitPlanMode`. The `plan-review-gate.py` hook blocks `ExitPlanMode` until that marker is present.
 
