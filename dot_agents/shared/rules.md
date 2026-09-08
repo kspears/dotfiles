@@ -12,9 +12,8 @@ Agent-agnostic rules — applies to Claude Code, Codex CLI, and any other coding
 - Don't apologize or use filler phrases like "Great question!" or "Certainly!".
 - When showing code changes, show only what changed with minimal surrounding context.
 - When unsure about intent, ask a short clarifying question rather than guessing.
-- If a request is vague — multiple valid interpretations exist, scope is unclear, or the target isn't specified — interview me before proceeding. Ask all clarifying questions in a single structured message (numbered list). Do not guess or proceed with assumptions.
+- If a request is vague — multiple valid interpretations exist, scope is unclear, or the target isn't specified — interview me before proceeding. Ask all clarifying questions in a single structured message (numbered list). Do not guess or proceed with assumptions. (The `interview-to-spec` skill is the one exception: it interviews in rounds by design.)
 - Skip the interview if the request includes a signal like "surprise me", "your call", or "just do something".
-- When asked to build a new feature, app, service, or other sizeable capability and no spec for it exists in the repo (`docs/specs/`), suggest running the `interview-to-spec` skill first. If I decline, proceed normally. Bug fixes and small tweaks don't need a spec.
 
 ## Change Philosophy
 - Make the smallest change that solves the problem.
@@ -59,6 +58,7 @@ Both are markdown, written so a human (or an agent) reading them cold in six mon
 - Say "step by step" or "manual mode" to switch to manual checkpoints — pause at each milestone for review.
 - Can switch modes mid-task. No signal = automated loop.
 - Fix anything broken found along the way — don't limit to just the planned work.
+- When asked to build a new feature, app, service, or other sizeable capability and no spec for it exists in `docs/specs/`, suggest running the `interview-to-spec` skill first if the agent has it. The skip signals under Communication Style apply here too. If I decline, proceed normally. Bug fixes and small tweaks don't need a spec.
 - Use background execution for slow commands (test suites, builds) when the agent supports it, so the loop doesn't stall.
 - If the same issue fails 3 times with different approaches, stop and ask for help. Don't spiral.
 - Commit in logical chunks as work progresses — not per iteration, not one giant blob.

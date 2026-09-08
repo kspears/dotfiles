@@ -12,8 +12,9 @@ This directory is managed by chezmoi as `dot_agents/` in `~/code/dotfiles` — s
 │   ├── rules.md          # agent-agnostic global rules (personality, git, safety, …)
 │   └── skills/           # portable prompted skills (one dir per skill, SKILL.md inside)
 │       ├── README.md
-│       ├── code-improver/SKILL.md
-│       └── security-reviewer/SKILL.md
+│       ├── code-improver/         # SKILL.md + agents/openai.yaml (Codex metadata)
+│       ├── security-reviewer/
+│       └── interview-to-spec/
 ├── claude/
 │   └── overlay.md        # Claude Code–only additions (planning, model strategy, plans dir)
 ├── codex/                # reserved for Codex-only additions if any emerge
@@ -41,7 +42,7 @@ This directory is managed by chezmoi as `dot_agents/` in `~/code/dotfiles` — s
 | Agent | Mechanism |
 | --- | --- |
 | Codex CLI | `~/.codex/skills/<name>` is a symlink to `~/.agents/shared/skills/<name>` |
-| Claude Code | `~/.claude/skills/<name>` is a symlink to `~/.agents/shared/skills/<name>` (confirmed working 2026-09-08 with `interview-to-spec`; the two older skills are not linked yet). `~/.claude/agents/<name>.md` (subagents) remains a separate, incompatible format. |
+| Claude Code | `~/.claude/skills/<name>` is a symlink to `~/.agents/shared/skills/<name>`. `~/.claude/agents/<name>.md` (subagents) remains a separate, incompatible format; `adversary` and `verifier` are tracked as `dot_claude/agents/`. |
 
 ### Memory
 
@@ -54,7 +55,7 @@ Not unified — Claude Code and Codex have incompatible hook schemas. Shell scri
 
 ## Adding a new shared skill
 
-1. Create `~/.agents/shared/skills/<name>/SKILL.md` with minimal frontmatter (`name`, `description`).
+1. Create `~/.agents/shared/skills/<name>/SKILL.md` with minimal frontmatter (`name`, `description`), plus `agents/openai.yaml` with Codex's `display_name`, `short_description`, and `default_prompt` (copy an existing one).
 2. Write the body as if no specific agent's tool names are available — speak generically about reading files, running commands, etc.
 3. Add `dot_codex/skills/symlink_<name>.tmpl` and `dot_claude/skills/symlink_<name>.tmpl` to the dotfiles repo, each containing `{{ .chezmoi.homeDir }}/.agents/shared/skills/<name>`, then `chezmoi apply`. Both agents discover the skill through the symlink.
 
