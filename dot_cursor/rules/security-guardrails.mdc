@@ -1,0 +1,17 @@
+---
+description: Security rules to prevent accidental secret or credential exposure
+alwaysApply: true
+teams: [general]
+tags: [security, secrets, guardrails]
+---
+
+# Security Guardrails
+
+- Never hardcode secrets, API keys, tokens, passwords, or private keys in source code.
+- Never commit or stage files that commonly contain secrets: `.env`, `credentials.json`,
+  `*_secret.*`, `*.pem`, `*.key`, token files.
+- Use environment variables or your organization's secret store (for example AWS Secrets Manager, SSM Parameter Store, or HashiCorp Vault) for sensitive values.
+- In example configs or documentation, use obvious placeholders like `REPLACE_ME` or `<your-token-here>`.
+- If you encounter an existing hardcoded secret in the codebase, warn immediately and suggest
+  moving it to a secret store before making other changes.
+- Never print, log, or echo secrets — even in debug or test code.

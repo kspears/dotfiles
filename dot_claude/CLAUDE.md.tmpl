@@ -1,0 +1,14 @@
+# Global Claude Rules
+
+{{ template "ai/shared.md" . }}
+
+{{ if eq .machine "work" -}}
+{{ template "ai/work.md" . }}
+{{ else -}}
+{{ template "ai/home.md" . }}
+{{ end }}
+
+## Claude Code
+
+- Plans are saved to `~/.claude/plans/`.
+- Prefer Homebrew for system-level packages on macOS.

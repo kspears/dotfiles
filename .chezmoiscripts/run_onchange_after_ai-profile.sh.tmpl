@@ -1,0 +1,63 @@
+#!/bin/bash
+# AI profile: {{ .machine }}
+set -eu
+
+{{ if ne .machine "work" -}}
+work_rules=(
+  branch-per-task.mdc
+  ci-style.mdc
+  docker-style.mdc
+  git-workflow.mdc
+  infrastructure-deployments-terragrunt.mdc
+  infrastructure-modules-ensemble.mdc
+  mr-prep-gate.mdc
+  python-style.mdc
+  ruff-before-push.mdc
+  terraform-style.mdc
+)
+
+work_skills=(
+  aws-accounts
+  aws-docs-research
+  confluence-lookup
+  gitlab-ci
+  gitlab-ci-debug
+  gitlab-mr-review
+  incident-collab
+  incident-export
+  investigate-env-cleaner
+  jira-acli
+  jira-content-standards
+  jira-intake
+  jira-ticket-context
+  jira-update
+  publish-html
+  qustodian
+  security-pen-testing
+  team-standup
+  vrs-release-troubleshoot
+  work
+)
+
+if command -v spellbook >/dev/null 2>&1; then
+  for target in cursor claude codex; do
+    for skill in "${work_skills[@]}"; do
+      spellbook remove skill "$skill" --global --target "$target" >/dev/null 2>&1 || true
+    done
+  done
+fi
+
+for rule in "${work_rules[@]}"; do
+  rm -f -- "$HOME/.cursor/rules/$rule"
+done
+
+for skill in "${work_skills[@]}"; do
+  rm -rf -- \
+    "$HOME/.cursor/skills/$skill" \
+    "$HOME/.cursor/skills-cursor/$skill" \
+    "$HOME/.claude/skills/$skill" \
+    "$HOME/.agents/skills/$skill"
+done
+{{ else -}}
+:
+{{ end -}}

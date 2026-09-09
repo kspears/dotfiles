@@ -51,7 +51,7 @@
       "Bash(gh run *)",
       "Bash(gh api *)",
       "Bash(gh repo *)",
-      "Bash(gh release *)",
+      "Bash(gh release *)"{{ if eq .machine "work" }},
       "Bash(kubectl get *)",
       "Bash(kubectl logs *)",
       "Bash(kubectl describe *)",
@@ -69,9 +69,10 @@
       "Bash(helm search *)",
       "Bash(helm show *)",
       "Bash(helm template *)",
-      "Bash(helm repo *)"
+      "Bash(helm repo *)"{{ end }}
     ]
   },
+  "model": "sonnet",
   "hooks": {
     "Stop": [
       {
