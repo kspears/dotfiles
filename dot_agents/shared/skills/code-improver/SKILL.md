@@ -18,15 +18,7 @@ Give a focused, actionable review that improves code quality without changing in
 
 ## Project convention checks
 
-If the repo has a `CLAUDE.md`, use it as the primary source of project-specific conventions.
-
-For BibleMarker, pay special attention to:
-- `@/` imports instead of deep relative imports
-- `scripture-*` theme variables instead of raw Tailwind color utilities
-- shared form/button components from `@/components/shared` instead of raw styled form controls
-- imports from `@/lib/database` instead of `sqlite-db.ts`
-- `useXxxStore` naming and limited persisted Zustand state
-- strict TypeScript, no `any`, early returns, and named exports
+If the repo has a `CLAUDE.md` or `AGENTS.md`, use it as the primary source of project-specific conventions.
 
 ## Review rules
 

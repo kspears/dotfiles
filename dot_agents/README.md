@@ -28,9 +28,9 @@ This directory is managed by chezmoi as `dot_agents/` in `~/code/dotfiles` — s
 | Agent | Mechanism |
 | --- | --- |
 | Claude Code | `~/.claude/CLAUDE.md` contains two `@`-imports: `@~/.agents/shared/rules.md` then `@~/.agents/claude/overlay.md` |
-| Codex CLI | `~/.codex/config.toml` sets `model_instructions_file = "/Users/kevin/.agents/shared/rules.md"`. `~/.codex/AGENTS.md` is also a symlink to the same file. |
+| Codex CLI | `~/.codex/config.toml` sets `model_instructions_file = "/Users/kevin/.agents/shared/rules.md"`. `~/.codex/AGENTS.md` is also a symlink to the same file (chezmoi-managed via `dot_codex/symlink_AGENTS.md.tmpl`). |
 | Cursor | `~/.cursor/rules/global.mdc` is **generated** by chezmoi from `dot_cursor/rules/global.mdc.tmpl`, which `include`s `shared/rules.md` verbatim under `alwaysApply: true` frontmatter. Deployed on the `work` machine only (gated in `.chezmoiignore`) — Cursor isn't used at home. Never edit the `.mdc` by hand; it is overwritten on every `chezmoi apply`. |
-| `~/AGENTS.md` | Symlink to `~/.agents/shared/rules.md` — for any agent that walks up to `$HOME` looking for AGENTS.md. |
+| `~/AGENTS.md` | Symlink to `~/.agents/shared/rules.md` (chezmoi-managed via `symlink_AGENTS.md.tmpl`) — for any agent that walks up to `$HOME` looking for AGENTS.md. |
 
 ### Per-repo rules
 

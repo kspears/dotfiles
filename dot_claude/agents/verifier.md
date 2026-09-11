@@ -11,8 +11,10 @@ You will be asked to verify that specific work functions — typically the local
 
 ```
 BASE=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's@^origin/@@')
-[ -z "$BASE" ] && BASE=$(git rev-parse --verify --quiet main >/dev/null && echo main || echo master)
+[ -z "$BASE" ] && BASE=$(git rev-parse --verify --quiet main >/dev/null && echo main || { git rev-parse --verify --quiet master >/dev/null && echo master; })
 ```
+
+If `$BASE` is empty, stop and report that the base branch could not be determined instead of guessing.
 
 Then gather: `git diff HEAD`, `git diff "$BASE"...HEAD`, and `git log --oneline "$BASE"..HEAD`. If the current branch *is* the base (no divergence), just work from the uncommitted diff.
 

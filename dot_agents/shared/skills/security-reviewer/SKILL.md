@@ -22,14 +22,7 @@ Check these areas when relevant:
 
 ## Project context
 
-If the repo has a `CLAUDE.md`, use it as the primary source of project-specific security context.
-
-For BibleMarker, keep these facts in mind:
-- SQLite writes should stay parameterized
-- the database should not be placed in the cloud sync folder
-- Biblia and ESV keys must never be committed
-- sensitive user data should not be logged or leaked into sync artifacts
-- Tauri and IPC surfaces need least-privilege thinking
+If the repo has a `CLAUDE.md` or `AGENTS.md`, use it as the primary source of project-specific security context.
 
 ## Review rules
 
