@@ -13,4 +13,6 @@
 
 - Prefer GitHub terminology and tooling unless the repository indicates otherwise.
 - Do not assume access to Quanata Jira, GitLab, AWS accounts, or internal documentation.
+- Use only skills from the personal catalog; do not install or synchronize the work catalog.
+- When a skill is needed in both catalogs, maintain an independent copy in each instead of using cross-catalog inheritance.
 - Follow repository-local `AGENTS.md`, `CLAUDE.md`, and `.cursor/rules` when present.

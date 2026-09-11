@@ -57,6 +57,11 @@ source ~/aws.zsh
 {{ end -}}
 source ~/secrets.zsh
 
+{{ if ne .machine "work" -}}
+# Use the personal skill catalog stored in this dotfiles repository.
+export SPELLBOOK_DIR={{ printf "%s/personal-spellbook" .chezmoi.sourceDir | quote }}
+{{ end -}}
+
 # +------+
 # | PATH |
 # +------+

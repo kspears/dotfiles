@@ -1,4 +1,5 @@
 .aws
+personal-spellbook
 
 {{ if ne .machine "work" }}
 .zsh/bin/aws-sso-switch

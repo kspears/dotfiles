@@ -14,5 +14,7 @@
 ## Work Tools
 
 - Prefer the installed work skills for Jira, GitLab, AWS, incidents, and internal documentation.
-- Treat the AI Spellbook as the source of truth for shared work skills and rules.
+- Use only skills from the company work catalog; do not install or synchronize the personal catalog.
+- Treat the company AI Spellbook catalog as the source of truth for work skills.
+- When a skill is needed in both catalogs, maintain an independent copy in each instead of using cross-catalog inheritance.
 - Follow repository-local `AGENTS.md`, `CLAUDE.md`, and `.cursor/rules` when present.

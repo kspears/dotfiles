@@ -22,28 +22,63 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply kevin
 
 Chezmoi prompts for a machine type (`home`, `work`, `consulting`) on first init. Templates use this to conditionally include machine-specific config (e.g. Brewfile extras, zshrc paths).
 
-## AI profiles
+## AI behavior profiles
 
-AI configuration is split by the chezmoi `machine` value:
+Chezmoi selects a small instruction layer from the `machine` value:
 
-| Profile | Rules and skills |
+| Profile | Behavior |
 |---|---|
-| `work` | Shared rules plus ticket branches, MR preparation, Quanata infrastructure rules, and work integrations |
-| `home` / `consulting` | Shared rules plus a lightweight GitHub-oriented workflow; work rules and org-specific skills are removed |
+| `work` | Shared rules plus ticket branches, MR preparation, Quanata infrastructure rules, and work tooling guidance |
+| `home` / `consulting` | Shared rules plus a lightweight GitHub-oriented workflow |
 
 Shared Claude and Codex instructions are rendered from `.chezmoitemplates/ai/`.
 Cursor keeps separate `.mdc` files because it supports scoped rules.
 
-The AI Spellbook is the source of truth for work skills. Install or update its
-global items only on a work profile:
+## AI skill catalogs
+
+Home and work skills are separate catalogs. A work machine installs only the
+company AI Spellbook repository; a home or consulting machine installs only
+the `personal-spellbook/` catalog in this dotfiles repository. If both
+environments need a skill, maintain a copy in each catalog instead of
+inheriting from or synchronizing the other catalog.
+
+On work machines, configure AI Spellbook as the catalog:
 
 ```sh
-spellbook sync --global
+spellbook config set-repo https://gitlab.com/quanata/projects/ai/ai-spellbook
 ```
 
-To switch an existing machine, change `machine` in
-`~/.config/chezmoi/chezmoi.toml`, then run `chezmoi apply`. The profile cleanup
-removes stale work-only rules and skills when leaving the work profile.
+On home and consulting machines, `.zshrc` sets `SPELLBOOK_DIR` to the personal
+catalog in the chezmoi source directory. `chezmoi update` updates that catalog
+along with the rest of the dotfiles.
+
+Install the selected catalog for all three agents:
+
+```sh
+spellbook init --global --target cursor,claude,codex
+```
+
+Update the catalog and installed skills on a work machine:
+
+```sh
+spellbook update
+spellbook sync --global --target cursor,claude,codex
+```
+
+On a home or consulting machine, update dotfiles first, then synchronize from
+its selected local catalog:
+
+```sh
+chezmoi update
+spellbook sync --global --target cursor,claude,codex
+```
+
+On home and consulting machines, `SPELLBOOK_DIR` takes precedence and
+Spellbook reads the catalog directly from dotfiles.
+
+Chezmoi does not install, remove, migrate, or reconcile live skill directories.
+Changing `machine` changes the behavioral instructions only; it is not a skill
+catalog migration workflow.
 
 ## Updating
 
