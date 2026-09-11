@@ -7,7 +7,7 @@ description: Interview the user in rounds to turn a fuzzy feature or app idea in
 
 The goal is to get what is in the user's head onto the page precisely enough that a different agent, with no access to this conversation, builds the right thing the first time. The spec is the deliverable. Do not plan the implementation and do not write code.
 
-This skill deliberately interviews in rounds. It is the sanctioned exception to the global rule that clarifying questions go in a single batch.
+This skill deliberately interviews in rounds, overriding the global rule that clarifying questions go in a single batch.
 
 ## Step 0: Orient in the codebase
 
@@ -24,7 +24,6 @@ Ask in topic-batched rounds: one numbered list per round, roughly 3–6 question
 
 Question rules:
 - Offer your best-guess default wherever you have one ("I'd assume X, correct?"). People correct faster than they generate.
-- Ask only what you cannot infer from the code or the conversation.
 - Add a one-line "why this matters" only when the reason is not obvious.
 - Use the user's vocabulary, not spec jargon.
 - Never invent a number, threshold, or fixture the user did not give. If one matters, ask for it.
@@ -40,7 +39,7 @@ Round plan. Skip rounds already answered; merge rounds when there is little to a
 5. **Constraints.** Stack, allowed dependencies, performance numbers, auth and security, compatibility, migrations, where it runs, deadlines, and what must be tested and at what level.
 6. **Acceptance.** Turn everything above into checkable criteria. Read them back to the user and confirm before writing.
 
-Stop when you could write every section without guessing, or after about five rounds, whichever comes first. Anything still unsettled at that point goes under Open questions rather than into another round.
+Stop when you could write every section without guessing. The six rounds above are the hard cap: anything still unsettled after round 6 goes under Open questions, not into another round.
 
 ## Step 2: Write the spec
 
@@ -71,7 +70,7 @@ Section notes:
 - **Status** is `Draft` while writing, `Reviewed` after step 3. The user may later set `Approved`; nothing in this skill does.
 - **Non-goals** covers both what is out of scope for good and what is deferred to a later phase. Say which.
 - **Constraints** includes testing expectations: which tests must exist and at what level.
-- **Acceptance criteria** are numbered. Each must be checkable without asking anyone: by a command with an expected output where possible, otherwise by a human following explicit steps. Given/When/Then works well. "Should be fast" is not a criterion; a number the user gave you is. Do not manufacture numbers or fixtures to make a criterion look checkable.
+- **Acceptance criteria** are numbered. Each must be checkable without asking anyone: by a command with an expected output where possible, otherwise by a human following explicit steps. Given/When/Then works well. "Should be fast" is not a criterion; a number the user gave you is.
 - **Decisions** is a table: decision, choice, why, decided by (user or agent default). This is where "your call" answers land.
 - **Open questions** lists anything the interview could not settle and who needs to resolve it. Fewer is better, but this is the honest escape hatch, not a failure.
 - **Existing code touched** is for existing repos: files or modules, and whether each is extended, replaced, or left alone. Omit the section for greenfield.

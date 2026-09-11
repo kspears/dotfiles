@@ -10,15 +10,10 @@ Pure-prompt skills that are portable across coding agents (no agent-specific too
 
 ## Wiring
 
-| Agent | Path | Type |
-| --- | --- | --- |
-| Codex CLI | `~/.codex/skills/<name>` | Symlink to `~/.agents/shared/skills/<name>` |
-| Claude Code | `~/.claude/skills/<name>` | Symlink to `~/.agents/shared/skills/<name>` |
+See "Adding a new shared skill" in the top-level `~/.agents/README.md`. Both agents discover skills through chezmoi-managed symlinks into this directory.
 
 ## Authoring rules
 
 - No hard-coded references to a specific agent's tool names (`Read`, `Edit`, etc.). Speak about files generically. An agent-specific hint is allowed only when phrased conditionally ("in Claude Code, ...") and paired with a generic fallback.
 - No hard-coded project context. If the repo has a `CLAUDE.md` or `AGENTS.md`, instruct the skill to read it for project conventions.
 - Keep frontmatter minimal (`name`, `description`). Agent-specific frontmatter (model, color, tool allowlists) goes in the agent's native wrapper, not here.
-
-Symlinks are chezmoi-managed: `dot_claude/skills/symlink_<name>.tmpl` and `dot_codex/skills/symlink_<name>.tmpl` in the dotfiles repo, each containing the target path. See the top-level `~/.agents/README.md` for which skills are not yet linked that way.

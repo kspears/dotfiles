@@ -75,7 +75,6 @@ Edit `shared/rules.md` (per **Editing** above). Claude and Codex pick it up on n
 ## Known followups
 
 - `~/.claude/settings.json` permissions list is past its 120-entry threshold per the startup hook — separate cleanup task.
-- `code-improver` and `security-reviewer` are not yet symlinked into `~/.claude/skills/`, and their Codex symlinks were made by hand rather than via chezmoi. Convert both to `symlink_*.tmpl` files when convenient.
 - Codex has been unused since 2026-06-22. Wiring is kept because it costs nothing; drop it if that stays true.
 
 ## Backups
