@@ -74,7 +74,6 @@ Edit `shared/rules.md` (per **Editing** above). Claude and Codex pick it up on n
 
 ## Known followups
 
-- `~/.claude/settings.json` permissions list is past its 120-entry threshold per the startup hook — separate cleanup task.
 - Codex has been unused since 2026-06-22. Wiring is kept because it costs nothing; drop it if that stays true.
 
 ## Backups
