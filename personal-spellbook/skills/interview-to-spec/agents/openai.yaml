@@ -1,0 +1,4 @@
+interface:
+  display_name: "Interview to Spec"
+  short_description: "Interview in rounds, then write a spec an agent can build from"
+  default_prompt: "Use $interview-to-spec to interview me and write a spec for what I want to build."

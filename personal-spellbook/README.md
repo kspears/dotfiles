@@ -6,3 +6,7 @@ machines. Chezmoi excludes this directory from the home directory and sets
 
 Work skills belong in the separate company AI Spellbook repository. If a skill
 is useful in both environments, maintain an explicit copy in each catalog.
+
+The initial catalog contains personal workflow skills already tracked or used
+by this dotfiles setup. Add other skills deliberately instead of importing
+agent-managed global directories wholesale.
