@@ -11,17 +11,25 @@ dot_Brewfile.tmpl
 .chezmoiscripts/darwin_*
 {{ end }}
 
-# Work-only files and Cursor rules
+# Work-only files and Cursor rules.
+# Patterns here are TARGET paths (e.g. .cursor/rules/x.mdc), not source paths.
 {{ if ne .machine "work" }}
 aws.zsh
-dot_cursor/rules/branch-per-task.mdc
-dot_cursor/rules/ci-style.mdc
-dot_cursor/rules/docker-style.mdc
-dot_cursor/rules/git-workflow.mdc
-dot_cursor/rules/infrastructure-deployments-terragrunt.mdc
-dot_cursor/rules/infrastructure-modules-ensemble.mdc
-dot_cursor/rules/mr-prep-gate.mdc
-dot_cursor/rules/python-style.mdc
-dot_cursor/rules/ruff-before-push.mdc
-dot_cursor/rules/terraform-style.mdc
+.cursor/rules/branch-per-task.mdc
+.cursor/rules/ci-style.mdc
+.cursor/rules/docker-style.mdc
+.cursor/rules/git-workflow.mdc
+.cursor/rules/infrastructure-deployments-terragrunt.mdc
+.cursor/rules/infrastructure-modules-ensemble.mdc
+.cursor/rules/mr-prep-gate.mdc
+.cursor/rules/python-style.mdc
+.cursor/rules/ruff-before-push.mdc
+.cursor/rules/terraform-style.mdc
+{{ end }}
+
+# The personal skill catalog is home/consulting only; work machines use the
+# company AI Spellbook catalog instead.
+{{ if eq .machine "work" }}
+.claude/skills
+.codex/skills
 {{ end }}

@@ -48,11 +48,7 @@ On work machines, configure AI Spellbook as the catalog:
 spellbook config set-repo https://gitlab.com/quanata/projects/ai/ai-spellbook
 ```
 
-On home and consulting machines, `.zshrc` sets `SPELLBOOK_DIR` to the personal
-catalog in the chezmoi source directory. `chezmoi update` updates that catalog
-along with the rest of the dotfiles.
-
-Install the selected catalog for all three agents:
+Install the work catalog for all three agents:
 
 ```sh
 spellbook init --global --target cursor,claude,codex
@@ -65,20 +61,19 @@ spellbook update
 spellbook sync --global --target cursor,claude,codex
 ```
 
-On a home or consulting machine, update dotfiles first, then synchronize from
-its selected local catalog:
+Home and consulting machines do not require Spellbook. Chezmoi symlinks each
+skill in `personal-spellbook/skills/` into `~/.claude/skills/` and
+`~/.codex/skills/`, so `chezmoi apply` is the whole install step and `chezmoi
+update` is the whole update step. Adding a skill means adding its directory
+plus a `symlink_<name>.tmpl` under `dot_claude/skills/` and `dot_codex/skills/`.
 
-```sh
-chezmoi update
-spellbook sync --global --target cursor,claude,codex
-```
+`.zshrc` also sets `SPELLBOOK_DIR` to the personal catalog on those machines, so
+Spellbook reads from dotfiles rather than a separate checkout if it is installed
+later.
 
-On home and consulting machines, `SPELLBOOK_DIR` takes precedence and
-Spellbook reads the catalog directly from dotfiles.
-
-Chezmoi does not install, remove, migrate, or reconcile live skill directories.
-Changing `machine` changes the behavioral instructions only; it is not a skill
-catalog migration workflow.
+Chezmoi does not migrate or reconcile skills between the two catalogs. Changing
+`machine` changes which catalog is wired up; it does not move skills between
+them.
 
 ## Updating
 
