@@ -1,0 +1,12 @@
+---
+description: Keep auxiliary git worktrees outside active workspace parents and clean them up after merge
+alwaysApply: true
+---
+
+# Worktree Management
+
+- When creating an auxiliary git worktree for agent work, do not place it as a sibling inside the active multi-repo workspace parent. This can confuse other agents and repo discovery.
+- Prefer a dedicated external parent such as `/Users/kevin.spears/code/worktrees/<repo>-<task>` unless the user requests a specific location.
+- Keep the primary checkout in its original workspace path unless the user explicitly asks to move it.
+- After a branch or MR is merged, clean up its auxiliary worktree with `git worktree remove <path>` once any needed changes are committed or intentionally discarded.
+- After removing a worktree, run `git worktree list` from the primary repo to verify the stale worktree is gone.

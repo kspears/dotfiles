@@ -1,0 +1,65 @@
+---
+description: Conventions when creating or editing an ensemble in the infrastructure-modules repo
+globs: /Users/kevin.spears/code/quanata/infrastructure/infrastructure-modules/ensembles/**/*.tf
+alwaysApply: false
+---
+
+# infrastructure-modules: Ensemble Conventions
+
+Always peer-check 2+ existing ensembles before writing. Prefer ones that touch the same AWS service (e.g. for a Lambda-related ensemble, look at `ensembles/aws-lambda`).
+
+## Required files in every ensemble
+
+- `main.tf` — resources and data lookups
+- `variables.tf` — inputs (always include `description`)
+- `outputs.tf` — outputs (always include `description`)
+- `versions.tf` — provider and Terraform version pins
+
+The repo README says modules MUST NOT include a `terraform {}` block. **This is outdated.** Every active ensemble has `versions.tf` with a `terraform {}` block. Follow the code.
+
+## versions.tf — match recent peers
+
+Floor pins from current peers (use these or newer):
+
+```terraform
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6"
+    }
+  }
+  required_version = ">= 1.2.9"
+}
+```
+
+- Don't use `required_version = "~> 1"` (too restrictive on minor).
+- Don't pin `aws ~> 5` for new ensembles; the repo has moved to `~> 6`.
+
+## Inputs to avoid
+
+- **No `tags` input.** The AWS provider supplies `Owner`/`Billing`/etc. via default tags. Don't accept or apply a `tags` map unless the resource genuinely needs caller-supplied tags beyond the defaults.
+- **No `aws_region` input.** Use `data "aws_region" "current" {}` and reference `data.aws_region.current.name`.
+- **For VPC, prefer `vpc_name` over `vpc_id`.** Look the VPC up by Name tag so callers don't have to thread the ID through, and so missing VPCs fail at plan time:
+  ```terraform
+  variable "vpc_name" {
+    type        = string
+    description = "Name tag of the VPC."
+  }
+
+  data "aws_vpc" "this" {
+    tags = { Name = var.vpc_name }
+  }
+  ```
+  Pattern reference: `infrastructure-pattern-library/terraform/rds-database/vpc.tf`.
+
+## Egress rules
+
+- Use `aws_vpc_security_group_egress_rule` (not inline `egress` blocks on `aws_security_group`).
+- Scope ports to the protocol's real port. **Never use `0-65535` for known protocols.** S3, HTTPS endpoints, etc. → `443` only.
+
+## CI
+
+- Branch name must match `<JIRA-ID>-<kebab>` (e.g. `DE-3396-vrs-lambda-egress-sg`).
+- TFLint runs in CI. Don't add a local `.tflint.hcl` to disable rules — fix the code (usually means adding `versions.tf`).
+- After merge, the repo auto-tags ensembles. Consumers in `infrastructure-deployments` should reference the tag.

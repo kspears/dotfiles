@@ -1,0 +1,19 @@
+---
+description: Prompt to create a new branch when switching directions mid-conversation
+alwaysApply: true
+---
+
+# Branch Per Task
+
+When the user pivots to a different topic, feature, or bug fix mid-conversation — especially if the current branch was created for something else — ask:
+
+> "This looks like a different direction from the current branch (`<branch-name>`). Do you want to create a new branch for this work?"
+
+**When to ask:**
+- The new work is unrelated to the current branch name/ticket
+- The user says something like "actually let's look at X" or "while we're here, let's also fix Y"
+- The current branch name suggests a specific ticket and the new work is a different concern
+
+**When not to ask:**
+- The new work is clearly a sub-task of the current branch's goal
+- The user explicitly says to stay on the current branch

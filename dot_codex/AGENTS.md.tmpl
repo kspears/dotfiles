@@ -1,0 +1,11 @@
+# Global Codex Rules
+
+{{ template "ai/profile.md" . }}
+
+## Codex Model Routing
+
+- Prefer `gpt-5.6-luna` for mechanical, low-risk delegated tasks.
+- Prefer `gpt-5.6-terra` for delegated implementation requiring moderate judgment.
+- Keep complex reasoning with the current root model.
+- If a named model is unavailable, choose the closest available lower-cost model appropriate to
+  the task's risk and complexity.

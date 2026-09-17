@@ -1,0 +1,15 @@
+---
+description: Require blind review of substantive plans before presenting them
+alwaysApply: true
+---
+
+# Blind Plan Review
+
+- Before presenting a substantive implementation plan to the user, run a blind review of the plan with a separate agent.
+- The reviewer should not be primed with the planner's preferred conclusion beyond the plan and necessary context.
+- Use a different model family from the planner when available. Examples:
+  - If planning with Claude/Opus/Sonnet, review with GPT/Codex.
+  - If planning with GPT/Codex, review with Claude/Opus/Sonnet.
+- Ask the reviewer to look for missing requirements, risky assumptions, simpler approaches, sequencing issues, test gaps, and unnecessary scope.
+- Incorporate clear review feedback before presenting the plan. If feedback is intentionally not adopted, mention the reason briefly.
+- For tiny, obvious, low-risk changes, a blind review is not required.

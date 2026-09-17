@@ -1,0 +1,13 @@
+---
+description: Dockerfile conventions
+globs: "**/Dockerfile*"
+alwaysApply: false
+---
+
+# Docker Style
+
+- Use multi-stage builds to minimize image size.
+- Pin base image versions -- never use `latest`.
+- Run as non-root user.
+- Order layers from least to most frequently changing for cache efficiency.
+- Use `.dockerignore` to exclude unnecessary files.

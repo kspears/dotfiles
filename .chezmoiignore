@@ -1,4 +1,5 @@
 .aws
+skills
 
 {{ if ne .machine "work" }}
 .zsh/bin/aws-sso-switch
@@ -6,11 +7,30 @@
 
 # macOS-only files
 {{ if ne .chezmoi.os "darwin" }}
-dot_Brewfile.tmpl
+.Brewfile
 .chezmoiscripts/darwin_*
 {{ end }}
 
-# Cursor is only used on the work machine
+# Work-only files and Cursor rules.
+# Patterns here are TARGET paths (e.g. .cursor/rules/x.mdc), not source paths.
 {{ if ne .machine "work" }}
-.cursor/rules
+aws.zsh
+.cursor/rules/branch-per-task.mdc
+.cursor/rules/ci-style.mdc
+.cursor/rules/docker-style.mdc
+.cursor/rules/git-workflow.mdc
+.cursor/rules/infrastructure-deployments-terragrunt.mdc
+.cursor/rules/infrastructure-modules-ensemble.mdc
+.cursor/rules/mr-prep-gate.mdc
+.cursor/rules/python-style.mdc
+.cursor/rules/ruff-before-push.mdc
+.cursor/rules/terraform-style.mdc
+.cursor/rules/worktree-management.mdc
+{{ end }}
+
+# skills/ is home/consulting only; work machines use the company AI Spellbook
+# catalog, which never lands here.
+{{ if eq .machine "work" }}
+.claude/skills
+.codex/skills
 {{ end }}

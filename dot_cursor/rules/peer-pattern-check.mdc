@@ -1,0 +1,37 @@
+---
+description: Read sibling code in the repo before writing new code. Mirror existing conventions.
+alwaysApply: true
+---
+
+# Peer Pattern Check
+
+Before writing new code, **find and read existing peers first.** Most "wrong" code is just code that ignored a nearby example.
+
+## When this applies
+
+- Adding a new file in a directory that already contains similar files (e.g. `ensembles/<new>/`, `services/<new>/`, `lib/<new>/`, a new test file).
+- Wiring a new dependency, module reference, or config block.
+- Pinning versions of anything (provider, library, image tag, lockfile entry).
+- Choosing naming, tags, inputs/outputs, branch names, or file layout.
+
+## Process
+
+1. Glob or list the parent directory to find siblings.
+2. Read at least 2 of the most recently-modified ones — prefer those that touch the same domain (e.g. same AWS service, same framework).
+3. Cross-check repo docs (README, AGENTS.md, contributing guides). **When docs and code disagree, the code wins.** Note the disagreement so the user can fix the docs.
+4. State the pattern back in one sentence before generating code, e.g. "Mirroring `ensembles/aws-lambda` for `versions.tf`, `ensembles/vpc` for VPC lookup."
+
+## What to copy from peers
+
+- Version pins (provider, language, framework, base image)
+- File layout (which files exist, what's in each)
+- Naming conventions (snake_case vs kebab vs PascalCase, prefixes/suffixes)
+- Input/output shape (what's a variable, what's a data lookup, what's hardcoded)
+- Tags and labels strategy
+- How dependencies are declared and consumed
+
+## Don't
+
+- Don't write code from first principles when the repo has an established pattern within reach.
+- Don't trust prose docs over actual files. READMEs go stale.
+- Don't introduce a "better" pattern unless the user asked for refactoring.

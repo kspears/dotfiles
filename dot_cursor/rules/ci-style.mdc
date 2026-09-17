@@ -1,0 +1,12 @@
+---
+description: YAML and CI pipeline conventions
+globs: "**/.gitlab-ci.yml,**/.gitlab-ci/**/*.yml"
+alwaysApply: false
+---
+
+# CI / YAML Style
+
+- Use consistent indentation (2 spaces).
+- Anchor and alias (`&` / `*`) to avoid duplicating blocks.
+- Keep pipeline jobs focused -- one responsibility per job.
+- Use meaningful job and stage names that describe what they do.

@@ -1,0 +1,14 @@
+# The ~/.agents/ layout was replaced by .chezmoitemplates/ai/, rendered per profile
+# into each agent's native config, and its skills moved to skills/. chezmoi does not
+# delete targets whose source entry disappeared, so without this the old ruleset
+# stays on disk and keeps being served to anything that still reads it.
+#
+# Nothing under the tree needs preserving: Codex reads skills from ~/.codex/skills,
+# which is symlinked to skills/ in this repository, and testflight-notes was the last
+# skill still living here.
+.agents
+
+# dot_cursor/rules/global.mdc.tmpl was replaced by the individual .mdc rule files. Its
+# rendered target inlined the whole old ruleset under alwaysApply, so leaving it behind
+# means Cursor loads the old rules and the new ones at the same time.
+.cursor/rules/global.mdc

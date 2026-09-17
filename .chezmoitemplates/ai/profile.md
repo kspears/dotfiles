@@ -1,0 +1,7 @@
+{{ template "ai/shared.md" . }}
+
+{{ if eq .machine "work" -}}
+{{ template "ai/work.md" . }}
+{{ else -}}
+{{ template "ai/home.md" . }}
+{{ end }}

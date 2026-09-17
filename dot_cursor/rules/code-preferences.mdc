@@ -1,0 +1,15 @@
+---
+description: General coding style and preferences
+alwaysApply: true
+---
+
+# Code Preferences
+
+Style: succinct, readable, simple, rigorous. No cleverness for its own sake.
+
+## General
+
+- Prefer standard library solutions before reaching for third-party packages.
+- Imports: stdlib first, then third-party, then local.
+- No dead code. No commented-out code checked in.
+- Error messages should be actionable -- say what went wrong and what to do about it.

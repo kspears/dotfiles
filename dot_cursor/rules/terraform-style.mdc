@@ -1,0 +1,14 @@
+---
+description: Terraform / HCL conventions
+globs: "**/*.tf"
+alwaysApply: false
+---
+
+# Terraform Style
+
+- Use `snake_case` for all resource names, variables, and outputs.
+- Always add `description` to variables and outputs.
+- Never hardcode AWS account IDs or regions -- use variables or data sources.
+- Use `locals` to avoid repeating expressions.
+- Prefer `for_each` over `count` for creating multiple resources.
+- Tag all resources with standard tags (team, environment, service).
