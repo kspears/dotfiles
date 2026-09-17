@@ -1,16 +1,5 @@
 # The ~/.agents/ layout was replaced by .chezmoitemplates/ai/, rendered per profile
-# into each agent's native config. chezmoi does not delete targets whose source
-# entry disappeared, so without this the old ruleset stays on disk and keeps being
-# served to anything that still reads it.
-#
-# ~/.agents/shared/skills/ is deliberately not listed wholesale: it still holds
-# work in progress that has not moved to skills/ yet.
-.agents/README.md
-.agents/claude
-.agents/codex
-.agents/scripts
-.agents/shared/rules.md
-.agents/shared/skills/README.md
-.agents/shared/skills/code-improver
-.agents/shared/skills/interview-to-spec
-.agents/shared/skills/security-reviewer
+# into each agent's native config, and its skills moved to skills/. chezmoi does not
+# delete targets whose source entry disappeared, so without this the old ruleset
+# stays on disk and keeps being served to anything that still reads it.
+.agents
