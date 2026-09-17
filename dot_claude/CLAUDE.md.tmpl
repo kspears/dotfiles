@@ -7,9 +7,10 @@
 ### Model and subagent strategy
 
 - Keep Opus for planning, investigation, architecture decisions, and review.
-- Delegate implementation to Sonnet subagents: file edits, builds, tests, and mechanical work
-  such as applying a pattern across files, running a build, or grepping. Use Haiku for trivial
-  lookups, and Opus for a subtask only when it genuinely needs deeper reasoning.
+- Use Haiku subagents for trivial lookups and mechanical, low-risk tasks.
+- Delegate well-specified implementation that requires moderate judgment to Sonnet subagents,
+  including file edits, builds, tests, and applying established patterns across files.
+- Use Opus for a subtask only when it genuinely needs deeper reasoning.
 
 ### Plans
 
@@ -20,9 +21,12 @@
   with the filename, feature name, and status (`Ready to implement` / `In progress` / `Done`).
 - Before calling `ExitPlanMode`, have a no-context Plan subagent review the plan standalone: give
   it enough background to review without the conversation, point it at the plan file and any
-  reference files, and ask for a findings report rather than edits. Apply what is valid, then add
-  the literal marker line `<!-- plan-reviewed -->` to the plan file. The `plan-review-gate.py`
-  hook blocks `ExitPlanMode` until that marker is present.
+  reference files, and ask for a findings report rather than edits. Apply what is valid before
+  exiting plan mode.
+{{ if ne .machine "work" -}}
+- On home and consulting machines, add the literal marker line `<!-- plan-reviewed -->` after the
+  review. The `plan-review-gate.py` hook blocks `ExitPlanMode` until that marker is present.
+{{ end }}
 
 ### Blind review after implementation
 

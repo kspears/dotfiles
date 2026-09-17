@@ -7,13 +7,15 @@ alwaysApply: true
 
 - Make minimal, focused changes. Don't refactor unrelated code while fixing a bug.
 - Fix root causes, not symptoms. Don't add workarounds unless there's no alternative.
-- Always verify changes work -- run tests and linters after making changes.
+- Use the repository's canonical verification command when available; otherwise run checks proportionate to the change.
+- Confirm changed behavior directly when practical. Distinguish change-related failures from pre-existing or environmental failures, and report anything that could not be verified.
 - Prefer editing existing files over creating new ones.
 - Don't add comments that merely restate what the code does.
 - **Preserve existing comments** when moving, splitting, or refactoring code. Comments often contain intent, context, or pointers that aren't obvious from the code alone. Carry them to wherever the associated logic ends up.
 - Don't rename or reorganize things without being asked.
 - Avoid churn-only diffs. Do not reorder imports, reformat code, rename symbols, or touch nearby lines unless it is necessary for the requested change.
 - Preserve existing local style when making focused fixes, even if another valid style would also pass lint or look cleaner.
+- Assume unrelated changes may belong to the user or another agent. Do not overwrite, revert, stage, or commit them; stop and explain when overlapping changes cannot be separated safely.
 - Before committing or opening an MR, review the diff and remove incidental edits that do not affect behavior, tests, clarity, or the requested outcome.
 - When fixing a test failure, understand *why* it failed before changing the test or the code.
 
@@ -25,16 +27,8 @@ alwaysApply: true
 
 ## When to ask vs. just do it
 
-**Ask first when:**
-- The task touches 3+ files or has architectural implications
-- There are multiple reasonable approaches and the user hasn't indicated a preference
-- Requirements are ambiguous or underspecified
-- The request involves destructive or hard-to-reverse changes
-- A change has a blast radius beyond what was asked
+**Ask first when** a choice materially affects product behavior, public interfaces, compatibility, security or privacy, data-loss risk, meaningful cost, or architecture that would be expensive to reverse.
 
-**Just do it when:**
-- The task is small, obvious, and low-risk
-- The user gave clear, specific instructions with no ambiguity
-- You've already discussed the approach in the current conversation
+**Just do it when** the decision is routine, low-cost, reversible, and supported by repository context. Don't stop solely to ask about minor preferences when an established pattern or safe default is available.
 
 Keep questions focused -- ask the fewest questions needed to unblock yourself. Batch related questions into one message.

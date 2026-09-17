@@ -1,8 +1,15 @@
-# The ~/.agents/ layout was replaced by .chezmoitemplates/ai/, rendered per profile
-# into each agent's native config, and its skills moved to skills/. chezmoi does not
-# delete targets whose source entry disappeared, so without this the old ruleset
-# stays on disk and keeps being served to anything that still reads it.
-.agents
+# The old shared rules layout was replaced by .chezmoitemplates/ai/, rendered per
+# profile into each agent's native config. Preserve ~/.agents/skills because Codex
+# uses it as a global skill directory.
+.agents/README.md
+.agents/claude
+.agents/codex
+.agents/scripts
+.agents/shared/rules.md
+.agents/shared/skills/README.md
+.agents/shared/skills/code-improver
+.agents/shared/skills/interview-to-spec
+.agents/shared/skills/security-reviewer
 
 # dot_cursor/rules/global.mdc.tmpl was replaced by the individual .mdc rule files. Its
 # rendered target inlined the whole old ruleset under alwaysApply, so leaving it behind

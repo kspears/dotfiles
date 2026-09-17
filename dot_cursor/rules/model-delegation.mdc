@@ -1,0 +1,13 @@
+---
+description: Delegate bounded work to cost-efficient models while retaining complex reasoning in the root agent
+alwaysApply: true
+---
+
+# Model Delegation
+
+- Use subagents when work can run independently, benefits from isolated context, or forms a bounded workstream. Work directly on simple, sequential, or context-heavy tasks when delegation overhead would outweigh the benefit.
+- Keep planning, architecture, ambiguous debugging, security-sensitive work, consequential decisions, integration, and final review with the current root model.
+- When Cursor exposes model selection for a delegated or background agent, prefer `Auto` or an available lower-cost non-thinking model for well-specified, reversible work.
+- Good lower-cost candidates include implementation from an approved plan, routine tests, repetitive edits, repository searches, formatting, and documentation updates.
+- Do not use Max Mode or a premium thinking model for routine delegated work unless its context or reasoning requirements justify the additional cost.
+- The root agent remains responsible for reviewing, integrating, and verifying delegated work.

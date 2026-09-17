@@ -73,6 +73,7 @@
     ]
   },
   "hooks": {
+{{ if ne .machine "work" -}}
     "SessionStart": [
       {
         "matcher": "",
@@ -119,6 +120,7 @@
         ]
       }
     ],
+{{ end }}
     "Stop": [
       {
         "hooks": [
@@ -162,5 +164,6 @@
     "semgrep@claude-plugins-official": false
   },
   "effortLevel": "high",
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "theme": "dark"
 }
