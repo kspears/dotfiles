@@ -1,5 +1,5 @@
 .aws
-personal-spellbook
+skills
 
 {{ if ne .machine "work" }}
 .zsh/bin/aws-sso-switch
@@ -27,8 +27,8 @@ aws.zsh
 .cursor/rules/terraform-style.mdc
 {{ end }}
 
-# The personal skill catalog is home/consulting only; work machines use the
-# company AI Spellbook catalog instead.
+# skills/ is home/consulting only; work machines use the company AI Spellbook
+# catalog, which never lands here.
 {{ if eq .machine "work" }}
 .claude/skills
 .codex/skills

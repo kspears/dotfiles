@@ -36,44 +36,26 @@ Cursor keeps separate `.mdc` files because it supports scoped rules.
 
 ## AI skill catalogs
 
-Home and work skills are separate catalogs. A work machine installs only the
-company AI Spellbook repository; a home or consulting machine installs only
-the `personal-spellbook/` catalog in this dotfiles repository. If both
-environments need a skill, maintain a copy in each catalog instead of
-inheriting from or synchronizing the other catalog.
+Home and work skills are separate catalogs, and nothing is shared between them.
+If both environments need a skill, keep an explicit copy in each.
 
-On work machines, configure AI Spellbook as the catalog:
+Home and consulting machines use `skills/` in this repository. Chezmoi symlinks
+each skill into `~/.claude/skills/` and `~/.codex/skills/`, so `chezmoi apply` is
+the whole install step and `chezmoi update` is the whole update step. Adding a
+skill means adding its directory plus a `symlink_<name>.tmpl` under
+`dot_claude/skills/` and `dot_codex/skills/` — see `skills/README.md`.
+
+Work machines use the company AI Spellbook repository, managed by its own
+`spellbook` CLI and outside chezmoi entirely:
 
 ```sh
 spellbook config set-repo https://gitlab.com/quanata/projects/ai/ai-spellbook
-```
-
-Install the work catalog for all three agents:
-
-```sh
 spellbook init --global --target cursor,claude,codex
+spellbook update && spellbook sync --global --target cursor,claude,codex
 ```
 
-Update the catalog and installed skills on a work machine:
-
-```sh
-spellbook update
-spellbook sync --global --target cursor,claude,codex
-```
-
-Home and consulting machines do not require Spellbook. Chezmoi symlinks each
-skill in `personal-spellbook/skills/` into `~/.claude/skills/` and
-`~/.codex/skills/`, so `chezmoi apply` is the whole install step and `chezmoi
-update` is the whole update step. Adding a skill means adding its directory
-plus a `symlink_<name>.tmpl` under `dot_claude/skills/` and `dot_codex/skills/`.
-
-`.zshrc` also sets `SPELLBOOK_DIR` to the personal catalog on those machines, so
-Spellbook reads from dotfiles rather than a separate checkout if it is installed
-later.
-
-Chezmoi does not migrate or reconcile skills between the two catalogs. Changing
-`machine` changes which catalog is wired up; it does not move skills between
-them.
+`.chezmoiignore` wires up exactly one of the two per machine. Changing `machine`
+changes which catalog is active; it does not migrate skills between them.
 
 ## Updating
 

@@ -4,7 +4,7 @@
 # served to anything that still reads it.
 #
 # ~/.agents/shared/skills/ is deliberately not listed wholesale: it still holds
-# work in progress that has not moved to personal-spellbook/ yet.
+# work in progress that has not moved to skills/ yet.
 .agents/README.md
 .agents/claude
 .agents/codex
