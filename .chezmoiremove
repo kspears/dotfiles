@@ -3,3 +3,8 @@
 # delete targets whose source entry disappeared, so without this the old ruleset
 # stays on disk and keeps being served to anything that still reads it.
 .agents
+
+# dot_cursor/rules/global.mdc.tmpl was replaced by the individual .mdc rule files. Its
+# rendered target inlined the whole old ruleset under alwaysApply, so leaving it behind
+# means Cursor loads the old rules and the new ones at the same time.
+.cursor/rules/global.mdc
