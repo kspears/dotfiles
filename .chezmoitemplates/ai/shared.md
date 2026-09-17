@@ -92,8 +92,8 @@
 Choose storage by who needs to read the fact, not by what it is about.
 
 - Global rules (this file plus the machine profile) — cross-project behavior, loaded every session.
-- Per-repository rules (`AGENTS.md`, `CLAUDE.md`, `.cursor/rules`) — project conventions, loaded
-  only in that repository.
+- Per-repository rules (`AGENTS.md`, `CLAUDE.md`, `.cursor/rules`) — project conventions. Follow
+  them when present; they are loaded only in that repository.
 - Agent-native memory — what one agent learns during sessions. It stays in that agent's format;
   do not try to share it across agents.
 

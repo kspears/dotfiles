@@ -28,7 +28,6 @@
 - Before building a new feature, app, or service with no spec in `docs/specs/`, suggest the
   `interview-to-spec` skill. Skip the suggestion when the user delegates the choice; if they
   decline, proceed normally.
-- Follow repository-local `AGENTS.md`, `CLAUDE.md`, and `.cursor/rules` when present.
 
 ## Personal Memory
 

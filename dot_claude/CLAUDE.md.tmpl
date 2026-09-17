@@ -1,23 +1,15 @@
 # Global Claude Rules
 
-{{ template "ai/shared.md" . }}
-
-{{ if eq .machine "work" -}}
-{{ template "ai/work.md" . }}
-{{ else -}}
-{{ template "ai/home.md" . }}
-{{ end }}
+{{ template "ai/profile.md" . }}
 
 ## Claude Code
 
 ### Model and subagent strategy
 
 - Keep Opus for planning, investigation, architecture decisions, and review.
-- Delegate implementation to Sonnet subagents: file edits, builds, tests, repetitive work. Use
-  Haiku for trivial lookups and Opus for a subtask only when it genuinely needs deeper reasoning.
-- Purely mechanical work (apply a pattern across files, run a build, grep for something) does not
-  need Opus.
-- Use `run_in_background` for slow commands so the loop does not stall.
+- Delegate implementation to Sonnet subagents: file edits, builds, tests, and mechanical work
+  such as applying a pattern across files, running a build, or grepping. Use Haiku for trivial
+  lookups, and Opus for a subtask only when it genuinely needs deeper reasoning.
 
 ### Plans
 
