@@ -1,0 +1,139 @@
+#!/usr/bin/env python3
+"""chezmoi modify_ script for ~/.claude/settings.json.
+
+Claude Code writes to this file at runtime: installing a plugin or marketplace,
+switching model or theme, dismissing a warning. A plain managed file fights that
+-- every apply either clobbers runtime state or needs the template chasing it.
+Both machines have already drifted past the template once in each direction.
+
+So this script receives the current file on stdin and emits the merged result:
+the keys below are enforced from the repository, everything else is left exactly
+as the machine has it. Keys deliberately NOT managed, i.e. free to drift:
+model, theme, tui, enabledPlugins, extraKnownMarketplaces,
+skipWorkflowUsageWarning, agentPushNotifEnabled.
+"""
+import json
+import sys
+
+HOOK = "~/.claude/hooks"
+
+
+def command(name):
+    return {"type": "command", "command": HOOK + "/" + name}
+
+
+def agent_status(state):
+    return {"type": "command", "command": "~/.local/bin/agent-tab-status " + state + " claude"}
+
+
+# Security hooks run everywhere. The plan-review gate and the hygiene check are
+# home-only: the plan marker workflow is gated to non-work in CLAUDE.md.
+hooks = {
+    "PreToolUse": [
+        {"matcher": "Bash", "hooks": [command("block-secret-dumps.py"), command("git-safety.py")]},
+    ],
+    "PostToolUse": [
+        {"matcher": "Bash", "hooks": [command("redact-secrets.py")]},
+    ],
+    "Stop": [{"hooks": [agent_status("waiting")]}],
+    "Notification": [{"hooks": [agent_status("waiting")]}],
+    "UserPromptSubmit": [{"hooks": [agent_status("busy")]}],
+}
+
+{{ if ne .machine "work" -}}
+hooks["SessionStart"] = [{"matcher": "", "hooks": [command("rules-hygiene.sh")]}]
+hooks["PreToolUse"].append({"matcher": "ExitPlanMode", "hooks": [command("plan-review-gate.py")]})
+{{ end -}}
+
+allow = [
+    "Bash(git status)",
+    "Bash(git log *)",
+    "Bash(git diff *)",
+    "Bash(git show *)",
+    "Bash(git add *)",
+    "Bash(git commit *)",
+    "Bash(git fetch *)",
+    "Bash(git branch *)",
+    "Bash(git checkout *)",
+    "Bash(git switch *)",
+    "Bash(git stash *)",
+    "Bash(git merge *)",
+    "Bash(git rebase *)",
+    "Bash(ls *)",
+    "Bash(cat *)",
+    "Bash(head *)",
+    "Bash(tail *)",
+    "Bash(wc *)",
+    "Bash(which *)",
+    "Bash(sort *)",
+    "Bash(uniq *)",
+    "Bash(jq *)",
+    "Bash(sed *)",
+    "Bash(grep *)",
+    "Bash(find *)",
+    "Bash(grep:*)",
+    "Bash(find:*)",
+    "Bash(rg:*)",
+    "Bash(echo *)",
+    "Bash(less *)",
+    "Bash(more *)",
+    "Bash(mkdir *)",
+    "Bash(touch *)",
+    "Bash(tsc *)",
+    "Bash(node *)",
+    "Bash(npm run *)",
+    "Bash(make *)",
+    "Bash(open *)",
+    "Bash(pbcopy)",
+    "Bash(pbpaste)",
+    "Bash(sleep *)",
+    "Bash(git -C *)",
+    "Bash(git push *)",
+    "Bash(git pull *)",
+    "Bash(git worktree *)",
+    "Bash(git mv *)",
+    "Bash(gh pr *)",
+    "Bash(gh run *)",
+    "Bash(gh api *)",
+    "Bash(gh repo *)",
+    "Bash(gh release *)",
+{{ if eq .machine "work" -}}
+    "Bash(kubectl get *)",
+    "Bash(kubectl logs *)",
+    "Bash(kubectl describe *)",
+    "Bash(kubectl rollout *)",
+    "Bash(kubectl top *)",
+    "Bash(kubectl wait *)",
+    "Bash(kubectl apply *)",
+    "Bash(kubectl run *)",
+    "Bash(kubectl drain *)",
+    "Bash(kubectl uncordon *)",
+    "Bash(kubectl cordon *)",
+    "Bash(dig *)",
+    "Bash(nslookup *)",
+    "Bash(helm list *)",
+    "Bash(helm search *)",
+    "Bash(helm show *)",
+    "Bash(helm template *)",
+    "Bash(helm repo *)",
+{{ end -}}
+]
+
+managed = {
+    "permissions": {"allow": allow},
+    "hooks": hooks,
+    "statusLine": {"type": "command", "command": "~/.claude/statusline.sh"},
+    "effortLevel": "high",
+    "skipAutoPermissionPrompt": True,
+}
+
+try:
+    current = json.load(sys.stdin)
+except (json.JSONDecodeError, ValueError):
+    current = {}
+if not isinstance(current, dict):
+    current = {}
+
+current.update(managed)
+json.dump(current, sys.stdout, indent=2)
+sys.stdout.write("\n")
