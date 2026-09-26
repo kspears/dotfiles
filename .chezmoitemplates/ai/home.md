@@ -28,6 +28,10 @@
 - Before building a new feature, app, or service with no spec in `docs/specs/`, suggest the
   `interview-to-spec` skill. Skip the suggestion when the user delegates the choice; if they
   decline, proceed normally.
+- Xcode 27 replaced the standalone Simulator.app with DeviceHub
+  (`/Applications/Xcode.app/Contents/Applications/DeviceHub.app`, bundle ID `com.apple.dt.Devices`).
+  Do not look for `Simulator.app` or `com.apple.iphonesimulator`. `xcrun simctl` still boots,
+  installs, launches, and screenshots headless simulators; rotation needs the DeviceHub UI.
 
 ## Personal Memory
 
