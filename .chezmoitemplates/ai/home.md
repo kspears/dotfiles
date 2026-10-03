@@ -28,6 +28,22 @@
 - Before building a new feature, app, or service with no spec in `docs/specs/`, suggest the
   `interview-to-spec` skill. Skip the suggestion when the user delegates the choice; if they
   decline, proceed normally.
+- Xcode 27 replaced the standalone Simulator.app with DeviceHub
+  (`/Applications/Xcode.app/Contents/Applications/DeviceHub.app`, bundle ID `com.apple.dt.Devices`).
+  Do not look for `Simulator.app` or `com.apple.iphonesimulator`. `xcrun simctl` still boots,
+  installs, launches, and screenshots headless simulators; rotation needs the DeviceHub UI.
+
+## Task Runner
+
+- Personal projects use `just` as the task-runner entry point. Run `just` to list recipes before
+  searching `package.json`, Makefiles, or shell history for how to build or test.
+- Prefer `just check` as the verification command when a `justfile` exists; it mirrors the CI gate.
+- Shared verbs mean the same thing in every repo: `setup` (install deps), `dev` (run locally),
+  `check` (full CI gate), `test`, `lint`, `fmt`, `build`, `release`. Repo-specific recipes use a
+  prefix (`ios-dev`, `worker-deploy`).
+- When adding a `justfile` to a repo, wrap the existing scripts (pnpm, cargo, CI steps) rather than
+  replacing them, give every recipe a doc comment, and mark the `default` (`just --list`) recipe
+  `[private]`. Use `set positional-arguments` with `"$@"` so quoted arguments pass through intact.
 
 ## Personal Memory
 
