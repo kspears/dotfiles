@@ -13,7 +13,7 @@ _gen_completion() {
   local bin=${commands[$2]} out="$HOME/.zsh/completions/_$1"
   [[ -n $bin ]] || return 0
   [[ -s $out && $out -nt ${bin:A} ]] && return 0
-  "${@:2}" >| "$out" 2>/dev/null
+  "${@:2}" >| "$out.tmp" 2>/dev/null && mv -f "$out.tmp" "$out" || rm -f "$out.tmp"
 }
 [[ -d $HOME/.zsh/completions ]] || mkdir -p "$HOME/.zsh/completions"
 _gen_completion kubectl kubectl completion zsh
