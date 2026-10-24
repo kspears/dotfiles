@@ -1,6 +1,7 @@
 #!/usr/bin/env zsh
 
 fpath=({{ .chezmoi.homeDir }}/zsh_plugins $fpath)
+fpath=(/opt/homebrew/share/zsh/site-functions $fpath)
 {{ if eq .machine "work" -}}
 fpath=($HOME/.docker/completions $fpath)
 {{ end -}}
