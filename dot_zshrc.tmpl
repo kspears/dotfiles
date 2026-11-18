@@ -1,9 +1,27 @@
 #!/usr/bin/env zsh
 
+[[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv zsh)"
+
 fpath=({{ .chezmoi.homeDir }}/zsh_plugins $fpath)
 {{ if eq .machine "work" -}}
 fpath=($HOME/.docker/completions $fpath)
 {{ end -}}
+
+# Completions for tools that only print them on demand. Regenerated when the
+# tool's binary is newer than the cached file, so upgrades are picked up.
+_gen_completion() {
+  local bin=${commands[$2]} out="$HOME/.zsh/completions/_$1"
+  [[ -n $bin ]] || return 0
+  [[ -s $out && $out -nt ${bin:A} ]] && return 0
+  "${@:2}" >| "$out.tmp" 2>/dev/null && mv -f "$out.tmp" "$out" || rm -f "$out.tmp"
+}
+[[ -d $HOME/.zsh/completions ]] || mkdir -p "$HOME/.zsh/completions"
+_gen_completion kubectl kubectl completion zsh
+_gen_completion docker docker completion zsh
+_gen_completion rustup rustup completions zsh rustup
+_gen_completion cargo rustup completions zsh cargo
+unfunction _gen_completion
+fpath=($HOME/.zsh/completions $fpath)
 
 # +------------+
 # | NAVIGATION |
