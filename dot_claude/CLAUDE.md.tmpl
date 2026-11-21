@@ -6,11 +6,11 @@
 
 ### Model and subagent strategy
 
-- Keep Opus for planning, investigation, architecture decisions, and review.
+- Run review subagents (plan, spec and blind code reviews, `/simplify` reviewers) on Opus or
+  stronger, and pass `model` explicitly: subagents inherit the root model.
 - Use Haiku subagents for trivial lookups and mechanical, low-risk tasks.
 - Delegate well-specified implementation that requires moderate judgment to Sonnet subagents,
   including file edits, builds, tests, and applying established patterns across files.
-- Use Opus for a subtask only when it genuinely needs deeper reasoning.
 
 ### Plans
 

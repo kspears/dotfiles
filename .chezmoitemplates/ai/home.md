@@ -49,14 +49,3 @@
 - When adding a `justfile` to a repo, wrap the existing scripts (pnpm, cargo, CI steps) rather than
   replacing them, give every recipe a doc comment, and mark the `default` (`just --list`) recipe
   `[private]`. Use `set positional-arguments` with `"$@"` so quoted arguments pass through intact.
-
-## Personal Memory
-
-- ATLAS (`forge` MCP `memory_*` tools) is cluster-hosted and read both by the deployed ATLAS
-  assistant and by any agent with the `forge` MCP server configured.
-- Save to ATLAS only when the fact is about Kevin personally (preferences, family, personal
-  context) *and* the deployed assistant would reference it. The exception is short-term
-  operational state with `expires_at` — ATLAS is the only store with expiry.
-- Default to agent-native memory or rules files. Promote to ATLAS deliberately, not reflexively:
-  every entry is a runtime cost for the assistant, not just session context.
-- Query ATLAS before answering about Kevin's preferences, family, or ongoing situations.
