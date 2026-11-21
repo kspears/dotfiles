@@ -32,6 +32,7 @@
   delegation overhead would outweigh the benefit.
 - Keep planning, architecture, ambiguous debugging, security-sensitive work, consequential
   decisions, integration, and final review with the current root model.
+- Run delegated reviews on a model at least as capable as the root model.
 - When model selection is available, delegate well-specified, reversible work to a lower-cost
   model. Good candidates include implementation from an approved plan, routine tests,
   repetitive edits, repository searches, formatting, and documentation updates.
