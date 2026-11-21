@@ -15,11 +15,11 @@
   That single command merges, switches local to the default branch, pulls, and deletes the local
   branch — do not chain `git checkout` / `git pull` / `git branch -D` after it, they will error.
 - Never merge, tag, or release unless explicitly requested.
-- Merge, then deploy: apply infrastructure, run deploy playbooks, and publish config (`tofu apply`,
-  `ansible-playbook`, `chezmoi apply`) only from an up-to-date default branch, after the PR has
-  merged. Deploying from a feature branch puts the live system ahead of the repository, and the
-  next deploy from the default branch silently reverts it. Exceptions, such as an outage fix that
-  cannot wait or a throwaway test environment, need the user's say-so; merge that branch next.
+- Change a live system (`tofu apply`, `ansible-playbook`, `wrangler deploy`, image pushes,
+  `chezmoi apply`) only from an up-to-date default branch after the PR merges; otherwise the next
+  default-branch deploy silently reverts it. Before the merge, the manual test is the plan, dry
+  run, or a non-production environment; verify the live system after the deploy. Deploy a feature
+  branch only with the user's say-so, then open its PR next.
 - When creating a new GitHub repository, push `main` before any feature branch so GitHub sets it
   as the default.
 - When asked to check a CI pipeline, run `gh run` commands directly rather than asking first.
