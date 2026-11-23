@@ -1,5 +1,4 @@
 # All Macs
-cask "kitty"
 brew "neovim"
 brew "tmux"
 brew "fzf"
@@ -8,8 +7,13 @@ brew "zoxide"
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 brew "awscli"
+brew "chezmoi"
+brew "just"
 cask "font-hack-nerd-font"
 cask "iterm2"
+{{ if ne .machine "work" -}}
+cask "kitty"
+{{ end -}}
 
 # Home only
 {{ if eq .machine "home" -}}
@@ -19,7 +23,6 @@ cask "cursor"
 cask "signal"
 brew "ansible"
 brew "htop"
-brew "just"
 {{ end -}}
 
 # Consulting only
@@ -27,4 +30,54 @@ brew "just"
 cask "firefox"
 {{ end -}}
 
-# Work only — TBD after checking work machine
+# Work only
+{{ if eq .machine "work" -}}
+tap "atlassian/acli"
+tap "hashicorp/tap"
+tap "localstack/tap"
+tap "snyk/tap", trusted: true
+tap "terraform-linters/tap"
+
+brew "atlassian/acli/acli", trusted: true
+brew "hashicorp/tap/terraform", trusted: true
+brew "localstack/tap/localstack-cli", trusted: true
+brew "snyk-cli"
+cask "terraform-linters/tap/tflint", trusted: true
+
+brew "bazelisk"
+brew "cmake"
+brew "dive"
+brew "gh"
+brew "glab"
+brew "glow"
+brew "go"
+brew "md5sha1sum"
+brew "newrelic-cli"
+brew "node@24"
+brew "pyenv"
+brew "pyenv-virtualenv"
+brew "ripgrep"
+brew "staticcheck"
+brew "uv"
+brew "xcodegen"
+
+brew "helm"
+brew "k9s"
+brew "kind"
+brew "kubectx"
+brew "kubernetes-cli"
+
+brew "librdkafka"
+brew "lightgbm"
+brew "unixodbc"
+brew "weasyprint"
+brew "zlib"
+
+cask "codex"
+cask "font-caskaydia-cove-nerd-font"
+cask "ghostty"
+cask "handy"
+cask "headlamp"
+cask "lm-studio"
+cask "opencode-desktop"
+{{ end -}}
