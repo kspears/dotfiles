@@ -89,7 +89,15 @@ eval "$(pyenv init - --no-rehash zsh)"
 export PATH="${HOMEBREW_PREFIX}/opt/openssl/bin:$PATH"
 {{ end -}}
 {{ if eq .machine "home" -}}
-JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null) && export JAVA_HOME
+# Pin the Brewfile's JDK 17 (Android builds); Homebrew's keg-only JDK is
+# invisible to java_home without a sudo symlink.
+_jdk="$HOMEBREW_PREFIX/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home"
+if [[ -d $_jdk ]]; then
+  export JAVA_HOME="$_jdk" PATH="$_jdk/bin:$PATH"
+else
+  JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null) && export JAVA_HOME
+fi
+unset _jdk
 export ANDROID_HOME="$HOME/Library/Android/sdk"
 _ndk=$(ls -1 "$ANDROID_HOME/ndk" 2>/dev/null | sort -V | tail -1)
 [[ -n "$_ndk" ]] && export NDK_HOME="$ANDROID_HOME/ndk/$_ndk"
@@ -112,6 +120,10 @@ export PATH="$HOME/go/bin:$PATH"
 
 command -v fzf >/dev/null && source <(fzf --zsh)
 command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
+if command -v fnm >/dev/null; then
+  eval "$(fnm env --use-on-cd --shell zsh)"
+  _fnm_autoload_hook  # --use-on-cd only fires on cd; apply it to the starting directory too.
+fi
 
 # Widget-wrapping plugins load last; syntax highlighting must be final.
 [[ -r /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]] && source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
